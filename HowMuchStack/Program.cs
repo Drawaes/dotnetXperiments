@@ -10,19 +10,17 @@ namespace RemainingStackSpace
 
         static unsafe void Main(string[] args)
         {
-            
+
             Console.WriteLine($"Stack space free {RemainingStackSpace}");
 
             var someVar = stackalloc byte[100000];
 
             Console.WriteLine($"Stack space free {RemainingStackSpace}");
-                        
+
             var t = new System.Threading.Thread(() => RunThread());
             t.Start();
 
             _event.WaitOne();
-            
-            Console.ReadLine();
         }
 
 
@@ -30,15 +28,15 @@ namespace RemainingStackSpace
         {
             int recurseCounter = 5;
 
-            Console.WriteLine("Calling 10 times");
+            Console.WriteLine("Calling 5 times");
 
             RecurseFunction(recurseCounter);
 
             Console.WriteLine($"Exited {RemainingStackSpace}");
 
-            Console.WriteLine("Calling 20 times");
+            Console.WriteLine("Calling 30 times");
 
-            recurseCounter = 10;
+            recurseCounter = 30;
             RecurseFunction(recurseCounter);
 
             Console.WriteLine($"Exited {RemainingStackSpace}");
@@ -48,14 +46,14 @@ namespace RemainingStackSpace
 
         private static unsafe void RecurseFunction(int numberOfTimes)
         {
-            if(numberOfTimes == 0)
+            if (numberOfTimes == 0)
             {
                 Console.WriteLine($"Remaining stack space {RemainingStackSpace}");
                 return;
             }
 
             numberOfTimes--;
-            var bytes = stackalloc byte[100000];
+            var bytes = stackalloc byte[1024 * 100];
             RecurseFunction(numberOfTimes);
         }
 
@@ -67,9 +65,16 @@ namespace RemainingStackSpace
         {
             get
             {
-                if(_stackBase == IntPtr.Zero)
+                if (_stackBase == IntPtr.Zero)
                 {
-                    _stackBase = GetStackBase();
+                    if (Environment.OSVersion.Platform == PlatformID.Unix)
+                    {
+                        _stackBase = GetStackBaseLinux();
+                    }
+                    else
+                    {
+                        _stackBase = GetStackBase();
+                    }
                 }
                 return _stackBase;
             }
@@ -83,6 +88,14 @@ namespace RemainingStackSpace
             return stackInfo.AllocationBase;
         }
 
+        private unsafe static IntPtr GetStackBaseLinux()
+        {
+            var pthread = pthread_self();
+            var result = pthread_getattr_np(pthread, out PThreadAttributes attributes);
+            result = pthread_attr_getstack(ref attributes, out IntPtr stackAddress, out IntPtr stackSize);
+            return stackAddress;
+        }
+
         public unsafe static long RemainingStackSpace
         {
             get
@@ -93,9 +106,31 @@ namespace RemainingStackSpace
             }
         }
 
+        [DllImport("libpthread.so.0")]
+        private static extern IntPtr pthread_self();
+
+        [DllImport("libpthread.so.0")]
+        private static extern int pthread_getattr_np(IntPtr pthread, out PThreadAttributes attributes);
+
+        [DllImport("libpthread.so.0")]
+        private unsafe static extern int pthread_attr_getstack(ref PThreadAttributes threadId, out IntPtr stackaddr, out IntPtr stacksize);
 
         [DllImport("kernel32.dll")]
         private static extern int VirtualQuery(IntPtr lpAddress, ref MEMORY_BASIC_INFORMATION lpBuffer, int dwLength);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PThreadAttributes
+        {
+            public int __detachstate;
+            public int __schedpolicy;
+            public int __schedparam;
+            public int __inheritsched;
+            public int __scope;
+            public IntPtr __guardsize;
+            public int __stackaddr_set;
+            public IntPtr __stackaddr;
+            public uint __stacksize;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct MEMORY_BASIC_INFORMATION
