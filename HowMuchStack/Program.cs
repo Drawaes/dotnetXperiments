@@ -11,13 +11,11 @@ namespace RemainingStackSpace
         static unsafe void Main(string[] args)
         {
 
-            Console.WriteLine($"Stack space free {RemainingStackSpace}");
+            var someVar = stackalloc byte[2000000];
 
-            var someVar = stackalloc byte[100000];
-
-            Console.WriteLine($"Stack space free {RemainingStackSpace}");
-
+            
             var t = new System.Threading.Thread(() => RunThread());
+            t.IsBackground = true;
             t.Start();
 
             _event.WaitOne();
@@ -26,6 +24,8 @@ namespace RemainingStackSpace
 
         private static void RunThread()
         {
+            Console.WriteLine($"Backgroud? Stack remaining {RemainingStackSpace}");
+
             int recurseCounter = 5;
 
             Console.WriteLine("Calling 5 times");
@@ -36,7 +36,7 @@ namespace RemainingStackSpace
 
             Console.WriteLine("Calling 30 times");
 
-            recurseCounter = 30;
+            recurseCounter = 90;
             RecurseFunction(recurseCounter);
 
             Console.WriteLine($"Exited {RemainingStackSpace}");
