@@ -64,26 +64,38 @@ namespace SingleExe
                 {
                     _newMethod.Body.Variables.Add(new VariableDefinition(GetTypeReference(v.VariableType)));
                 }
+                var oldGenDictionary = _genericParameters;
+
+                _genericParameters = new Dictionary<string, GenericParameter>(_genericParameters);
+
+                int counter = 0;
 
                 var newProcessor = _newMethod.Body.GetILProcessor();
                 foreach (var i in _oldMethod.Body.Instructions)
                 {
                     var operand = i.Operand;
-                    switch (operand)
+                    if (i.OpCode.OperandType == OperandType.InlineType)
                     {
-                        case MethodReference mRef:
-                            mRef = new MethodReference(mRef.Name, GetTypeReference(mRef.DeclaringType));
-                            operand = mRef;
-                            break;
-                        case FieldReference fRef:
-                            operand = new FieldReference(fRef.Name, GetTypeReference(fRef.FieldType), GetTypeReference(fRef.DeclaringType));
-                            break;
-                        case TypeReference tRef:
-                            operand = GetTypeReference(tRef);
-                            break;
+                        //var typeDef = 
                     }
-                    i.Operand = operand;
-                    newProcessor.Append(i);
+                    else
+                    {
+                        switch (operand)
+                        {
+                            case MethodReference mRef:
+                                mRef = new MethodReference(mRef.Name, GetTypeReference(mRef.DeclaringType));
+                                operand = mRef;
+                                break;
+                            case FieldReference fRef:
+                                operand = new FieldReference(fRef.Name, GetTypeReference(fRef.FieldType), GetTypeReference(fRef.DeclaringType));
+                                break;
+                            case TypeReference tRef:
+                                operand = GetTypeReference(tRef);
+                                break;
+                        }
+                        i.Operand = operand;
+                        newProcessor.Append(i);
+                    }
                 }
                 _newMethod.Body = newProcessor.Body;
             }

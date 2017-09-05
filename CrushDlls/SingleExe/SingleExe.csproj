@@ -10,7 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MethodState.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ILSmasher\ILSmasher.csproj" />
   </ItemGroup>
 
 </Project>

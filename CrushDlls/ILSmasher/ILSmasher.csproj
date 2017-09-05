@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="TypeDefinitionExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentIL.Cecil" Version="1.0.2" />
+    <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
+  </ItemGroup>
+
+</Project>
