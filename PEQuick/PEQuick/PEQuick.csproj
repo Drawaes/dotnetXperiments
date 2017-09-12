@@ -6,13 +6,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="DataDirectoriesHeader.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="CliDataHeader.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-preview2-25707-02" />

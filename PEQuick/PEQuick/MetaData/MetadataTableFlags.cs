@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PEQuick
+namespace PEQuick.MetaData
 {
     [Flags]
     public enum MetadataTableFlags : ulong

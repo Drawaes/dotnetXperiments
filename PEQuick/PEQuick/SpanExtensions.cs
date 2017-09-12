@@ -81,7 +81,7 @@ namespace PEQuick
             return input.Slice(nullTerminator);
         }
 
-        public static int BitCount(long value)
+        public static int BitCount(ulong value)
         {
             // see https://github.com/dotnet/corefx/blob/5965fd3756bc9dd9c89a27621eb10c6931126de2/src/System.Reflection.Metadata/src/System/Reflection/Internal/Utilities/BitArithmetic.cs
 

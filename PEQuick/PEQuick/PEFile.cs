@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using PEQuick.TableRows;
 
 namespace PEQuick
 {
@@ -44,7 +45,7 @@ namespace PEQuick
             s = s.Read(out _dataDirectories);
 
             _sections = new Section[_peHeader.NumberOfSections];
-            for(var i = 0; i < _sections.Length;i++)
+            for (var i = 0; i < _sections.Length; i++)
             {
                 s = s.Read(out _sections[i]);
             }
@@ -59,14 +60,15 @@ namespace PEQuick
             var section = metaData;
             metaData = metaData.CheckForMagicValue(MagicNumbers.MetaData);
             metaData = metaData.ReadMetadataHeader(out _metaDataHeader);
-            
-            for (var i = 0; i < _metaDataHeader.Streams;i++)
+
+            for (var i = 0; i < _metaDataHeader.Streams; i++)
             {
                 metaData = metaData.ReadStream(out StreamHeader sh);
-                switch(sh.Name)
+                switch (sh.Name)
                 {
                     case "#~":
-                        throw new NotImplementedException();
+                        var metadataTables = new MetaDataTables(section.Slice((int)sh.Offset, (int)sh.Size));
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -83,9 +85,9 @@ namespace PEQuick
 
         private Section GetImageSection(ImageDataDirectory dir)
         {
-            foreach(var s in _sections)
+            foreach (var s in _sections)
             {
-                if(dir.VirtualAddress >= s.VirtualAddress
+                if (dir.VirtualAddress >= s.VirtualAddress
                     && dir.VirtualAddress < s.VirtualEnd)
                 {
                     return s;

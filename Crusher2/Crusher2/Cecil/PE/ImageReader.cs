@@ -372,15 +372,7 @@ namespace Mono.Cecil.PE {
 
 				int size;
 				switch (table) {
-				case Table.Module:
-					size = 2	// Generation
-						+ stridx_size	// Name
-						+ (guididx_size * 3);	// Mvid, EncId, EncBaseId
-					break;
-				case Table.TypeRef:
-					size = GetCodedIndexSize (CodedIndex.ResolutionScope)	// ResolutionScope
-						+ (stridx_size * 2);	// Name, Namespace
-					break;
+                    
 				case Table.TypeDef:
 					size = 4	// Flags
 						+ (stridx_size * 2)	// Name, Namespace
