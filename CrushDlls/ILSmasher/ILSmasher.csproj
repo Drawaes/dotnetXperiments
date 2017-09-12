@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Key.cs" />
     <Compile Remove="TypeDefinitionExtensions.cs" />
+    <Compile Remove="TypeExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentIL.Cecil" Version="1.0.2" />
     <PackageReference Include="Mono.Cecil" Version="0.10.0-beta6" />
   </ItemGroup>
 

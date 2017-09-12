@@ -1,53 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Mono.Cecil;
 
 namespace ILSmasher
 {
-    public static class ModuleLoader
-    {
-        static List<ModuleDefinition> _moduleDefinitions = new List<ModuleDefinition>();
-        public static ModuleDefinition EntryModule;
-        public static ModuleDefinition OldEntryModule;
+    //public static class ModuleLoader
+    //{
+    //    static List<ModuleDefinition> _moduleDefinitions = new List<ModuleDefinition>();
+    //    public static ModuleDefinition EntryModule;
+    //    public static ModuleDefinition OldEntryModule;
 
-        public static void Load(string pathToModules, string entryModule, string moduleName)
-        {
+    //    static Queue<object> _remainingWork = new Queue<object>();
 
-            foreach (var file in System.IO.Directory.GetFiles(pathToModules, "*.dll"))
-            {
-                try
-                {
-                    var mod = ModuleDefinition.ReadModule(file);
-                    if (string.Compare(file, entryModule, true) == 0)
-                    {
-                        OldEntryModule = mod;
-                        EntryModule = ModuleDefinition.CreateModule(mod.Name, mod.Kind);
-                    }
-                    _moduleDefinitions.Add(mod);
-                }
-                catch
-                {
-                    Console.WriteLine($"File failed to load {System.IO.Path.GetFileName(file)}");
-                }
-            }
-            
-        }
+    //    public static void Load(string pathToModules, string entryModule, string moduleName)
+    //    {
+    //        OldEntryModule = ModuleDefinition.ReadModule(entryModule, new ReaderParameters(ReadingMode.Immediate)
+    //        {
+    //            AssemblyResolver = new AssemblyResolver(pathToModules)
+    //        });
+    //        EntryModule = ModuleDefinition.CreateModule(moduleName, OldEntryModule.Kind);
+    //    }
 
-        public static void LoadAllTypes()
-        {
-            foreach (var mod in _moduleDefinitions)
-            {
-                foreach (var t in mod.Types)
-                {
-                    TypeMapper.AddType(t);
-                }
-            }
-        }
-
-        public static void Save(string fileName)
-        {
-            EntryModule.Write(fileName);
-        }
-    }
+    //    public static void ProcessEntryPoint()
+    //    {
+    //        EntryModule.EntryPoint = MethodMapper.GetMethodDefinition(OldEntryModule.EntryPoint);
+    //    }
+                      
+    //    public static void Save(string fileName)
+    //    {
+    //        EntryModule.Write(fileName);
+    //    }
+    //}
 }

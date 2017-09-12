@@ -1,105 +1,74 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Mono.Cecil;
 
 namespace ILSmasher
 {
-    public static class MethodMapper
-    {
-        private static Dictionary<string, MethodGenerator> _methods = new Dictionary<string, MethodGenerator>();
-        private static Dictionary<string, MethodReference> _methodsToDereference = new Dictionary<string, MethodReference>();
+    //public static class MethodMapper
+    //{
+    //    private static Dictionary<Key, MethodGenerator> _methodDefinitions = new Dictionary<Key, MethodGenerator>();
+    //    private static Queue<MethodGenerator> _backlog = new Queue<MethodGenerator>();
 
-        public static void AddMethod(MethodDefinition methodDef)
-        {
-            if (!_methods.ContainsKey(methodDef.SafeName()))
-            {
-                _methods.Add(methodDef.SafeName(), new MethodGenerator(methodDef));
-            }
-        }
+    //    public static int ItemsInBacklog => _backlog.Count;
 
-        public static string SafeName(this MethodReference methodReference) => $"{methodReference.DeclaringType.SafeName()}.{methodReference.Name}";
+    //    public static MethodDefinition GetMethodDefinition(MethodDefinition methodDef)
+    //    {
+    //        var key = methodDef.GetKey();
+    //        if(_methodDefinitions.TryGetValue(key, out MethodGenerator newDef))
+    //        {
+    //            return newDef.Definition;
+    //        }
+    //        var generator = new MethodGenerator(methodDef);
+    //        _methodDefinitions.Add(key, generator);
+    //        generator.WireUpToParent();
+    //        _backlog.Enqueue(generator);
+    //        return generator.Definition;
+    //    }
 
-        internal static MethodDefinition GetMethodDefinition(MethodReference methodRef)
-        {
-            var className = methodRef.DeclaringType.SafeName();
-            var type = TypeMapper.GetType(className);
-            var count = type.AllMethods().Where(m => MatchMethod(m, methodRef)).ToList();
-            if(count.Count > 1)
-            {
-                //hack
-                //count = count.Where(f => f.MetadataToken == methodRef.MetadataToken).ToList();
-                return count.First(m => m.FullName == methodRef.FullName);
-            }
-            return type.AllMethods().Single(m => MatchMethod(m, methodRef));
-        }
+    //    public static MethodReference GetMethodReference(MethodReference methodReference, IGenericParameterProvider parmProvider)
+    //    {
+    //        if(methodReference is GenericInstanceMethod genMethod)
+    //        {
+    //            var newInstance = new GenericInstanceMethod(GetMethodReference(genMethod.ElementMethod, parmProvider));
+    //            TypeMapper.GetTypeReferences(genMethod.GenericArguments, newInstance.GenericArguments, newInstance.ElementMethod);
+    //            return newInstance;
+    //        }
+    //        if(methodReference is MethodDefinition methodDef)
+    //        {
+    //            return GetMethodDefinition(methodDef);
+    //        }
+    //        var resolve = methodReference.Resolve();
+    //        if(resolve != null)
+    //        {
+    //            return GetMethodDefinition(resolve);
+    //        }
+    //        //throw new NotImplementedException();
+    //        //Need to make a reference
+    //        var newRef = new MethodReference(methodReference.Name, TypeMapper.GetTypeReference(methodReference.ReturnType, parmProvider), TypeMapper.GetTypeReference(methodReference.DeclaringType, parmProvider));
+    //        TypeMapper.GetParameterDefinitions(methodReference.Parameters, newRef.Parameters, newRef.DeclaringType);
+    //        GenericMapper.GetGenericParameters(methodReference.GenericParameters, newRef.GenericParameters, newRef.DeclaringType);
+    //        return newRef;
+    //    }
 
-        
+    //    internal static int Iterate(int count)
+    //    {
+    //        if (_backlog.Count == 0)
+    //        {
+    //            return 0;
+    //        }
 
-        public static bool MatchMethod(MethodDefinition def, MethodReference methodRef)
-        {
-            if(methodRef is GenericInstanceMethod genMethod)
-            {
-                methodRef = genMethod.ElementMethod;
-                return MatchMethod(def, methodRef);
-            }
-            
-            //Need more complex matching rules this is a placeholder
-            if (def.Name != methodRef.Name)
-            {
-                return false;
-            }
-            if (def.HasParameters != methodRef.HasParameters)
-            {
-                return false;
-            }
-            if (def.HasParameters)
-            {
-                if (def.Parameters.Count != methodRef.Parameters.Count)
-                {
-                    return false;
-                }
-                for (var i = 0; i < def.Parameters.Count; i++)
-                {
-                    if(!MatchParameters(def.Parameters[i], methodRef.Parameters[i]))
-                    {
-                        return false;
-                    }
-                }
-            }
-            if(def.HasGenericParameters != methodRef.HasGenericParameters)
-            {
-                return false;
-            }
-            if(def.HasGenericParameters)
-            {
-                if(def.GenericParameters.Count != methodRef.GenericParameters.Count)
-                {
-                    return false;
-                }
-                
-            }
-            return true;
-        }
+    //        var counter = 0;
+    //        do
+    //        {
+    //            var item = _backlog.Dequeue();
+    //            Console.WriteLine($"Finishing method {item.Definition.FullName}");
+    //            item.Finish();
 
-        public static bool MatchParameters(ParameterReference parm1, ParameterReference parm2)
-        {
-            TypeDefinition td;
-
-            if (parm1.Index != parm2.Index)
-            {
-                return false;
-            }
-            if(parm1.ParameterType.ContainsGenericParameter || parm2.ParameterType.ContainsGenericParameter)
-            {
-                return true;
-            }
-            return MatchTypeReference(parm1.ParameterType, parm2.ParameterType);
-        }
-
-        public static bool MatchTypeReference(TypeReference type1, TypeReference type2) => type1.SafeName() == type2.SafeName();
-
-    }
+    //            counter++;
+    //            count--;
+    //        } while (count > 0 && _backlog.Count > 0);
+    //        return counter;
+    //    }
+    //}
 }
