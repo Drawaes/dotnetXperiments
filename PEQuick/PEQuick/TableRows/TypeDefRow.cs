@@ -6,11 +6,11 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct TypeDefRow
+    public class TypeDefRow
     {
         private uint _flags;
-        private uint _name;
-        private uint _namespace;
+        private StringIndex _name;
+        private StringIndex _namespace;
         private TypeDefOrRefIndex _baseType;
         private FieldIndex _fields;
         private MethodIndex _methods;
@@ -22,18 +22,13 @@ namespace PEQuick.TableRows
         public TypeDefRow(ref MetaDataReader reader)
         {
             _flags = reader.Read<uint>();
-            _name = reader.ReadStringOffset();
-            _namespace = reader.ReadStringOffset();
-            _baseType = reader.ReadTypeDefOrRefIndex();
-            _fields = new FieldIndex(ref reader);
-            _methods = new MethodIndex(ref reader);
+            _name = reader.ReadIndex<StringIndex>();
+            _namespace = reader.ReadIndex<StringIndex>();
+            _baseType = reader.ReadIndex<TypeDefOrRefIndex>();
+            _fields = reader.ReadIndex<FieldIndex>();
+            _methods = reader.ReadIndex<MethodIndex>();
             FieldsEnd = default(FieldIndex);
             MethodsEnd = default(MethodIndex);
-        }
-
-        public void AddField(FieldRow fieldRow)
-        {
-            
         }
     }
 }

@@ -9,9 +9,9 @@ namespace PEQuick.TableRows
     {
         private TypeRefRow[] _rows;
 
-        public TypeRefTable(Dictionary<MetadataTableFlags, int> sizes, ref MetaDataReader reader)
+        public TypeRefTable(MetaDataTables tables, ref MetaDataReader reader)
         {
-            _rows = new TypeRefRow[sizes[MetadataTableFlags.TypeRef]];
+            _rows = new TypeRefRow[tables.Sizes.GetSize(MetadataTableFlags.TypeRef)];
             for(var i = 0; i < _rows.Length;i++)
             {
                 _rows[i] = new TypeRefRow(ref reader);

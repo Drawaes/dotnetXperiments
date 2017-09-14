@@ -9,9 +9,9 @@ namespace PEQuick.TableRows
     {
         private TypeDefRow[] _rows;
 
-        public TypeDefTable(int size, ref MetaDataReader reader)
+        public TypeDefTable(MetaDataTables tables, ref MetaDataReader reader)
         {
-            _rows = new TypeDefRow[size];
+            _rows = new TypeDefRow[tables.Sizes.GetSize(MetadataTableFlags.TypeDef)];
             for(var i =0;i < _rows.Length;i++)
             {
                 _rows[i] = new TypeDefRow(ref reader);

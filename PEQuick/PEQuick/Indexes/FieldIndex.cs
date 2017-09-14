@@ -5,16 +5,12 @@ using PEQuick.MetaData;
 
 namespace PEQuick.Indexes
 {
-    public struct FieldIndex
+    public struct FieldIndex:IIndex
     {
         private uint _rawIndex;
-
-        public FieldIndex(ref MetaDataReader reader)
-        {
-            // TODO calculate the index size incase it is larger
-            _rawIndex = reader.Read<ushort>();
-        }
-
+                
         public uint Index => _rawIndex;
+
+        public void SetRawIndex(uint rawIndex) => _rawIndex = rawIndex;
     }
 }

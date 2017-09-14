@@ -4,10 +4,13 @@ using System.Text;
 
 namespace PEQuick.Indexes
 {
-    public struct TypeDefOrRefIndex : IIndex
+    public struct HasFieldMarshalIndex : IIndex
     {
         private uint _rawIndex;
 
-        public void SetRawIndex(uint rawIndex) => _rawIndex = rawIndex;
+        public void SetRawIndex(uint rawIndex)
+        {
+            _rawIndex = rawIndex;
+        }
     }
 }

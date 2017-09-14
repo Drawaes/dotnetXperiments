@@ -9,14 +9,14 @@ namespace PEQuick.TableRows
     public struct TypeRefRow
     {
         private ScopeIndex _resolutionScope;
-        private uint _name;
-        private uint _namespace;
+        private StringIndex _name;
+        private StringIndex _namespace;
 
         public TypeRefRow(ref MetaDataReader reader)
         {
             _resolutionScope = new ScopeIndex(ref reader);
-            _name = reader.ReadStringOffset();
-            _namespace = reader.ReadStringOffset();
+            _name = reader.ReadIndex<StringIndex>();
+            _namespace = reader.ReadIndex<StringIndex>();
         }
     }
 }
