@@ -77,7 +77,7 @@ namespace PEQuick
                 value = Marshal.PtrToStringUTF8((IntPtr)ptr, nullTerminator);
             }
             // align to 4 byte boundary
-            nullTerminator = (nullTerminator + 3) & ~0x03;
+            nullTerminator = (nullTerminator + 4) & ~0x03;
             return input.Slice(nullTerminator);
         }
 

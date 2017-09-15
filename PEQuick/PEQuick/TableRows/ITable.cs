@@ -5,8 +5,9 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public interface IRow
+    public interface ITable
     {
-        void Read(ref MetaDataReader reader);
+        TableFlag TableFlag { get; }
+        void LoadFromMemory(ref MetaDataReader reader, int size);
     }
 }

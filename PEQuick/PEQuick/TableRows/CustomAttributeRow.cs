@@ -6,13 +6,13 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct CustomAttributeRow : IRow
+    public class CustomAttributeRow : Row
     {
         private HasCustomAttributeIndex _parent;
         private CustomAttributeTypeIndex _type;
         private BlobIndex _value;
 
-        public void Read(ref MetaDataReader reader)
+        public override void Read(ref MetaDataReader reader)
         {
             _parent = reader.ReadIndex<HasCustomAttributeIndex>();
             _type = reader.ReadIndex<CustomAttributeTypeIndex>();

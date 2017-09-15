@@ -7,7 +7,7 @@ namespace PEQuick
 {
     public static class Extensions
     {
-        public static int GetSize(this Dictionary<MetadataTableFlags, int> self, MetadataTableFlags flag)
+        public static int GetSize(this Dictionary<TableFlag, int> self, TableFlag flag)
         {
             if(self.TryGetValue(flag, out int value))
             {

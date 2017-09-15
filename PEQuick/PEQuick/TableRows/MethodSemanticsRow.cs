@@ -6,13 +6,13 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct MethodSemanticsRow : IRow
+    public class MethodSemanticsRow : Row
     {
         private ushort _semantics;
         private MethodIndex _method;
         private HasSemanticsIndex _association;
 
-        public void Read(ref MetaDataReader reader)
+        public override void Read(ref MetaDataReader reader)
         {
             _semantics = reader.Read<ushort>();
             _method = reader.ReadIndex<MethodIndex>();

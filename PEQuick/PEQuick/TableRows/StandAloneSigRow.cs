@@ -6,11 +6,11 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct StandAloneSig : IRow
+    public class StandAloneSigRow : Row
     {
         private BlobIndex _signature;
 
-        public void Read(ref MetaDataReader reader)
+        public override void Read(ref MetaDataReader reader)
         {
             _signature = reader.ReadIndex<BlobIndex>();
         }

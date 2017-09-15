@@ -6,17 +6,19 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public class FieldRow
+    public class FieldRow : Row
     {
         private ushort _flags;
-        private StringIndex _name;
+        private StringIndex _nameIndex;
         private BlobIndex _signature;
-
-        public FieldRow(ref MetaDataReader reader)
+        
+        public override void Read(ref MetaDataReader reader)
         {
             _flags = reader.Read<ushort>();
-            _name = reader.ReadIndex<StringIndex>();
+            _nameIndex = reader.ReadIndex<StringIndex>();
             _signature = reader.ReadIndex<BlobIndex>();
         }
+
+        public override string ToString() => _nameIndex.Value;
     }
 }

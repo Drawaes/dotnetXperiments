@@ -5,10 +5,10 @@ using PEQuick.MetaData;
 
 namespace PEQuick.Indexes
 {
-    public struct ScopeIndex
+    public struct ResolutionScopeIndex
     {
         private uint _scopeIndex;
 
-        public ScopeIndex(ref MetaDataReader reader) => _scopeIndex = reader.Read<ushort>();
+        public ResolutionScopeIndex(ref MetaDataReader reader) => _scopeIndex = reader.Read<ushort>();
     }
 }

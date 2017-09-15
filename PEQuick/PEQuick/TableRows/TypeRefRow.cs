@@ -6,17 +6,17 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct TypeRefRow
+    public class TypeRefRow : Row
     {
-        private ScopeIndex _resolutionScope;
-        private StringIndex _name;
-        private StringIndex _namespace;
+        private ResolutionScopeIndex _resolutionScope;
+        private StringIndex _nameIndex;
+        private StringIndex _namespaceIndex;
 
-        public TypeRefRow(ref MetaDataReader reader)
+        public override void Read(ref MetaDataReader reader)
         {
-            _resolutionScope = new ScopeIndex(ref reader);
-            _name = reader.ReadIndex<StringIndex>();
-            _namespace = reader.ReadIndex<StringIndex>();
+            _resolutionScope = new ResolutionScopeIndex(ref reader);
+            _nameIndex = reader.ReadIndex<StringIndex>();
+            _namespaceIndex = reader.ReadIndex<StringIndex>();
         }
     }
 }

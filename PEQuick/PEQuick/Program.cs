@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PEQuick
 {
@@ -6,7 +7,13 @@ namespace PEQuick
     {
         static void Main(string[] args)
         {
-            PEFile.Load("C:\\code\\combined\\MergeTest.dll");
+            var fileList = new string[] { "System.Console.dll" }; // ,
+            var files = new Dictionary<string, PEFile>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var fl in fileList)
+            {
+                files.Add(fl, PEFile.Load("C:\\code\\combined\\"+ fl));
+            }
             Console.WriteLine("Hello World!");
         }
     }

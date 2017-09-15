@@ -6,13 +6,13 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct DeclSecurityRow : IRow
+    public class DeclSecurityRow : Row
     {
         private ushort _action;
         private HasDeclSecurityIndex _parent;
         private BlobIndex _permissionSet;
-
-        public void Read(ref MetaDataReader reader)
+        
+        public override void Read(ref MetaDataReader reader)
         {
             _action = reader.Read<ushort>();
             _parent = reader.ReadIndex<HasDeclSecurityIndex>();

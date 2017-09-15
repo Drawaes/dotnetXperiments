@@ -6,7 +6,7 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct AssemblyRefRow : IRow
+    public class AssemblyRefRow : Row
     {
         private ushort _majorVersion;
         private ushort _minorVersion;
@@ -14,11 +14,11 @@ namespace PEQuick.TableRows
         private ushort _revisionNumber;
         private uint _flags;
         private BlobIndex _publicKeyOrToken;
-        private StringIndex _name;
-        private StringIndex _culture;
+        private StringIndex _nameIndex;
+        private StringIndex _cultureIndex;
         private BlobIndex _hashValue;
 
-        public void Read(ref MetaDataReader reader)
+        public override void Read(ref MetaDataReader reader)
         {
             _majorVersion = reader.Read<ushort>();
             _minorVersion = reader.Read<ushort>();
@@ -26,9 +26,10 @@ namespace PEQuick.TableRows
             _revisionNumber = reader.Read<ushort>();
             _flags = reader.Read<uint>();
             _publicKeyOrToken = reader.ReadIndex<BlobIndex>();
-            _name = reader.ReadIndex<StringIndex>();
-            _culture = reader.ReadIndex<StringIndex>();
+            _nameIndex = reader.ReadIndex<StringIndex>();
+            _cultureIndex = reader.ReadIndex<StringIndex>();
             _hashValue = reader.ReadIndex<BlobIndex>();
         }
+
     }
 }

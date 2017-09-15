@@ -5,7 +5,7 @@ using System.Text;
 namespace PEQuick.Flags
 {
     [Flags]
-    public enum MethodAttributesFlags:ushort
+    public enum MethodAttributesFlags : ushort
     {
         mdMemberAccessMask = 0x0007,
         mdPrivateScope = 0x0000,

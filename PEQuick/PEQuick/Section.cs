@@ -15,11 +15,16 @@ namespace PEQuick
         public uint PointerToRawData;
         public uint PointerToRelocations;
         public uint PointerToLineNumbers;
-        public uint NumberOfRelocations;
-        public uint NumberOfLineNumbers;
+        public ushort NumberOfRelocations;
+        public ushort NumberOfLineNumbers;
         public uint Characteristics;
 
         public uint VirtualEnd => VirtualAddress + SizeOfRawData;
         public uint DevirtualisedAddress => PointerToRawData - VirtualAddress;
+
+        public override string ToString()
+        {
+            return $"{VirtualAddress}-{VirtualAddress + SizeOfRawData}";
+        }
     }
 }

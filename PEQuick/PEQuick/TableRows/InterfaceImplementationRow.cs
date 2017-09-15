@@ -6,12 +6,12 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public struct InterfaceImplementationRow:IRow
+    public class InterfaceImplementationRow : Row
     {
         private TypeDefIndex _typeDef;
         private TypeDefOrRefIndex _interface;
-        
-        public void Read(ref MetaDataReader reader)
+
+        public override void Read(ref MetaDataReader reader)
         {
             _typeDef = reader.ReadIndex<TypeDefIndex>();
             _interface = reader.ReadIndex<TypeDefOrRefIndex>();

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-preview2-25707-02" />
+    <PackageReference Include="System.Text.Primitives" Version="0.1.0-e170912-3" />
   </ItemGroup>
   
 </Project>

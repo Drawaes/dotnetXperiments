@@ -7,19 +7,18 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ModuleTableRow:IRow
+    public class ModuleTableRow : Row
     {
         public ushort Generation;
-        public StringIndex Name;
+        private StringIndex _nameIndex;
         public uint Mvid;
         public uint EncId;
         public uint EncBaseId;
-                
-        public void Read(ref MetaDataReader reader)
+
+        public override void Read(ref MetaDataReader reader)
         {
             Generation = reader.Read<ushort>();
-            Name = reader.ReadIndex<StringIndex>();
+            _nameIndex = reader.ReadIndex<StringIndex>();
             Mvid = reader.ReadGuidOffset();
             EncId = reader.ReadGuidOffset();
             EncBaseId = reader.ReadGuidOffset();

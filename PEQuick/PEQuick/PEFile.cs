@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using PEQuick.MetaData;
 using PEQuick.TableRows;
 
 namespace PEQuick
@@ -17,8 +19,12 @@ namespace PEQuick
         private CliHeader _cliHeader;
         private byte[] _originalFile;
         private CliDataHeader _metaDataHeader;
+        private MetaDataTables _metaDataTables;
+        private StringsSection _strings;
+        private GuidSection _guidSection;
+        private BlobSection _blobs;
 
-        internal PEFile(byte[] file)
+        internal unsafe PEFile(byte[] file)
         {
             _originalFile = file;
             var originalSlice = new Span<byte>(file);
@@ -31,7 +37,7 @@ namespace PEQuick
             s = s.Read(out _peOptions);
             s = s.Read(out ushort subsystem);
             s = s.Read(out ushort dllFlags);
-
+            var size = sizeof(MemorySize32);
             if (_peOptions.Is64)
             {
                 s = s.Read(out MemorySize64 memSize64);
@@ -61,20 +67,36 @@ namespace PEQuick
             metaData = metaData.CheckForMagicValue(MagicNumbers.MetaData);
             metaData = metaData.ReadMetadataHeader(out _metaDataHeader);
 
+            var streamHeaders = new StreamHeader[_metaDataHeader.Streams];
+
+
             for (var i = 0; i < _metaDataHeader.Streams; i++)
             {
                 metaData = metaData.ReadStream(out StreamHeader sh);
-                switch (sh.Name)
+                streamHeaders[i] = sh;
+                switch(sh.Name)
                 {
+                    case "#Strings":
+                        _strings = new StringsSection(section.Slice((int)sh.Offset, (int)sh.Size));
+                        break;
+                    case "#GUID":
+                        _guidSection = new GuidSection(section.Slice((int)sh.Offset, (int)sh.Size));
+                        break;
+                    case "#Blob":
+                        _blobs = new BlobSection(section.Slice((int)sh.Offset, (int)sh.Size));
+                        break;
                     case "#~":
-                        var metadataTables = new MetaDataTables(section.Slice((int)sh.Offset, (int)sh.Size));
+                        break;
+                    case "#US":
                         break;
                     default:
                         throw new NotImplementedException();
                 }
-
             }
 
+            //Load the strings and blobs
+            var metaTable = streamHeaders.Single(s => s.Name == "#~");
+            _metaDataTables = new MetaDataTables(section.Slice((int)metaTable.Offset,(int)metaTable.Size), _strings,_blobs);
         }
 
         private void LoadCliHeader()
