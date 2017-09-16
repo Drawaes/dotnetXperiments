@@ -18,6 +18,32 @@ namespace PEQuick
             return span.Slice(size);
         }
 
+        public static Span<byte> ReadEncodedInt(this Span<byte> input, out uint output)
+        {
+            const byte oneByteFilter = 0b1000_0000;
+            const byte twoByteFilter = 0b0100_0000;
+            const byte fourByteFilter = oneByteFilter | twoByteFilter;
+
+            if ((input[0] & oneByteFilter) == 0)
+            {
+                output = input[0];
+                return input.Slice(1);
+            }
+
+            if((input[0] & twoByteFilter) ==0)
+            {
+                output = (uint)(((input[0] & ~oneByteFilter) << 8) | input[1]);
+                return input.Slice(2);
+            }
+
+            output = (uint)(((input[0] & ~fourByteFilter) << 24)
+                | (input[1] << 16)
+                | (input[2] << 8)
+                | input[3]);
+
+            return input.Slice(4);
+        }
+
         public static Span<byte> ReadLengthPrefixedString(this Span<byte> input, out string value)
         {
             input = input.Read(out uint size);

@@ -6,17 +6,16 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public struct MethodIndex:IIndex
+    public class MethodIndex : Index
     {
-        private uint _rawIndex;
+        private MethodRow _method;
 
-        public uint Index => _rawIndex;
+        public int Index => checked((int)_rawIndex);
+        public MethodRow Row => _method;
 
-        public void Resolve(MetaDataTables tables)
+        internal override void Resolve(MetaDataTables tables)
         {
-            throw new NotImplementedException();
+            _method = tables.GetCollection<MethodRow>()[Index];
         }
-
-        public void SetRawIndex(uint rawIndex) => _rawIndex = rawIndex;
     }
 }

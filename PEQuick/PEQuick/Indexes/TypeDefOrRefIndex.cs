@@ -6,22 +6,34 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class TypeDefOrRefIndex : IIndex
+    public class TypeDefOrRefIndex : Index
     {
-        private uint _rawIndex;
+        private const uint BitMask = 0b0000_0011;
+        private Row _row;
 
-        public void Resolve(MetaDataTables tables)
+        public Row Row => _row;
+
+        internal override void Resolve(MetaDataTables tables)
         {
+            var flags = _rawIndex & BitMask;
+            var index = (int)(_rawIndex >> 2);
+            if (index == 0)
+            {
+                return;
+            }
+            switch (flags)
+            {
+                case 0:
+                    _row = tables.GetCollection<TypeDefRow>()[index];
+                    return;
+                case 1:
+                    _row = tables.GetCollection<TypeRefRow>()[index];
+                    return;
+                case 2:
+                    _row = tables.GetCollection<TypeSpecRow>()[index];
+                    return;
+            }
             throw new NotImplementedException();
         }
-
-        public void SetRawIndex(uint rawIndex) => _rawIndex = rawIndex;
-
-        /*
-      * TypeDefOrRef: 2 bits to encode tag Tag
-TypeDef 0
-TypeRef 1
-TypeSpec 2
-*/
     }
 }

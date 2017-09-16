@@ -23,6 +23,7 @@ namespace PEQuick.MetaData
 
             _useLargeIndexes = new Dictionary<Type, bool>
             {
+                { typeof(TypeOrMethodDefIndex), UsesLargeIndexes(_sizes, 1, TableFlag.Method, TableFlag.TypeDef) },
                 { typeof(MethodDefOrRefIndex), UsesLargeIndexes(_sizes, 1, TableFlag.Method, TableFlag.MemberRef) },
                 {typeof(ImplementationIndex), UsesLargeIndexes(_sizes, 2, TableFlag.File, TableFlag.AssemblyRef, TableFlag.ExportedType) },
                 { typeof(MemberForwardedIndex), UsesLargeIndexes(_sizes, 1, TableFlag.Field, TableFlag.Method) },
@@ -72,7 +73,7 @@ namespace PEQuick.MetaData
             return max >= ushort.MaxValue;
         }
 
-        public T ReadIndex<T>() where T : IIndex, new()
+        public T ReadIndex<T>() where T : Index, new()
         {
             uint value;
             if (_useLargeIndexes[typeof(T)])
@@ -101,7 +102,7 @@ namespace PEQuick.MetaData
 
         public T Read<T>() where T : struct
         {
-            Debug.Assert(!typeof(IIndex).IsAssignableFrom(typeof(T)));
+            Debug.Assert(!typeof(Index).IsAssignableFrom(typeof(T)));
 
             _input = _input.Read(out T value);
             return value;

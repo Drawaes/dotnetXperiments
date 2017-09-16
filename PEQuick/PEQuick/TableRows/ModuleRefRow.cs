@@ -10,6 +10,14 @@ namespace PEQuick.TableRows
     {
         private StringIndex _nameIndex;
 
+        public override TableFlag Table => TableFlag.ModuleRef;
+        public override uint AssemblyTag => Tag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _nameIndex.Resolve(tables);
+        }
+        
         public override void Read(ref MetaDataReader reader)
         {
             _nameIndex = reader.ReadIndex<StringIndex>();

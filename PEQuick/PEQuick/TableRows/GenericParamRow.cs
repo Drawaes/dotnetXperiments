@@ -10,14 +10,23 @@ namespace PEQuick.TableRows
     {
         private ushort _number;
         private ushort _flags;
-        private TypeDefOrRefIndex _owner;
+        private TypeOrMethodDefIndex _owner;
         private StringIndex _name;
+
+        public override uint AssemblyTag => _owner.Row.AssemblyTag;
+        public override TableFlag Table => TableFlag.GenericParam;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _owner.Resolve(tables);
+            _name.Resolve(tables);
+        }
 
         public override void Read(ref MetaDataReader reader)
         {
             _number = reader.Read<ushort>();
             _flags = reader.Read<ushort>();
-            _owner = reader.ReadIndex<TypeDefOrRefIndex>();
+            _owner = reader.ReadIndex<TypeOrMethodDefIndex>();
             _name = reader.ReadIndex<StringIndex>();
         }
     }

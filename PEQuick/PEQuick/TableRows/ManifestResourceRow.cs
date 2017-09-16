@@ -12,6 +12,17 @@ namespace PEQuick.TableRows
         private uint _flags;
         private StringIndex _name;
         private ImplementationIndex _implementation;
+        private AssemblyRow _parentRow;
+
+        public override TableFlag Table => TableFlag.ManifestResource;
+        public override uint AssemblyTag => _parentRow.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parentRow = tables.GetCollection<AssemblyRow>()[1];
+            _name.Resolve(tables);
+            _implementation.Resolve(tables);
+        }
 
         public override void Read(ref MetaDataReader reader)
         {

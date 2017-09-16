@@ -6,20 +6,14 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class HasFieldMarshalIndex : IIndex
+    public class HasFieldMarshalIndex : Index
     {
-        private uint _rawIndex;
+        public Row Row => throw new NotImplementedException();
 
-        public void Resolve(MetaDataTables tables)
+        internal override void Resolve(MetaDataTables tables)
         {
             throw new NotImplementedException();
         }
-
-        public void SetRawIndex(uint rawIndex)
-        {
-            _rawIndex = rawIndex;
-        }
-
         /*
          * HasFieldMarshall: 1 bit to encode tag Tag
 Field 0

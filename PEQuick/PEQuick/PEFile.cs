@@ -60,6 +60,12 @@ namespace PEQuick
             LoadMetaDataHeader();
         }
 
+        internal GuidSection Guids => _guidSection;
+        internal StringsSection Strings => _strings;
+        internal BlobSection Blobs => _blobs;
+
+        public MetaDataTables MetaDataTables => _metaDataTables;
+
         private void LoadMetaDataHeader()
         {
             var metaData = GetImageData(_cliHeader.MetaData);
@@ -96,7 +102,7 @@ namespace PEQuick
 
             //Load the strings and blobs
             var metaTable = streamHeaders.Single(s => s.Name == "#~");
-            _metaDataTables = new MetaDataTables(section.Slice((int)metaTable.Offset,(int)metaTable.Size), _strings,_blobs);
+            _metaDataTables = new MetaDataTables(section.Slice((int)metaTable.Offset,(int)metaTable.Size), this);
         }
 
         private void LoadCliHeader()
@@ -105,12 +111,12 @@ namespace PEQuick
             imageData.Read(out _cliHeader);
         }
 
-        private Section GetImageSection(ImageDataDirectory dir)
+        internal Section GetImageSection(uint rva)
         {
             foreach (var s in _sections)
             {
-                if (dir.VirtualAddress >= s.VirtualAddress
-                    && dir.VirtualAddress < s.VirtualEnd)
+                if (rva >= s.VirtualAddress
+                    && rva < s.VirtualEnd)
                 {
                     return s;
                 }
@@ -120,8 +126,14 @@ namespace PEQuick
 
         private Span<byte> GetImageData(ImageDataDirectory dir)
         {
-            var address = dir.VirtualAddress + GetImageSection(dir).DevirtualisedAddress;
+            var address = dir.VirtualAddress + GetImageSection(dir.VirtualAddress).DevirtualisedAddress;
             return _originalFile.AsSpan().Slice((int)address, (int)dir.Size);
+        }
+
+        internal Span<byte> GetRVA(uint rva)
+        {
+            var address = rva + GetImageSection(rva).DevirtualisedAddress;
+            return _originalFile.AsSpan().Slice((int)address);
         }
 
         public static PEFile Load(string fileName)

@@ -7,21 +7,31 @@ using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
 {
-    public class ModuleTableRow : Row
+    public class ModuleRow : Row
     {
-        public ushort Generation;
+        private ushort _generation;
         private StringIndex _nameIndex;
-        public uint Mvid;
-        public uint EncId;
-        public uint EncBaseId;
+        private uint _mvid;
+        private uint _encId;
+        private uint _encBaseId;
+        private AssemblyRow _parent;
+
+        public override TableFlag Table => TableFlag.Module;
+        public override uint AssemblyTag => _parent.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parent = tables.GetCollection<AssemblyRow>()[1];
+            _nameIndex.Resolve(tables);
+        }
 
         public override void Read(ref MetaDataReader reader)
         {
-            Generation = reader.Read<ushort>();
+            _generation = reader.Read<ushort>();
             _nameIndex = reader.ReadIndex<StringIndex>();
-            Mvid = reader.ReadGuidOffset();
-            EncId = reader.ReadGuidOffset();
-            EncBaseId = reader.ReadGuidOffset();
+            _mvid = reader.ReadGuidOffset();
+            _encId = reader.ReadGuidOffset();
+            _encBaseId = reader.ReadGuidOffset();
         }
     }
 }

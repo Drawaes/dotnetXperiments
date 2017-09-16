@@ -11,7 +11,16 @@ namespace PEQuick.TableRows
         private ushort _action;
         private HasDeclSecurityIndex _parent;
         private BlobIndex _permissionSet;
-        
+
+        public override TableFlag Table => TableFlag.DeclSecurity;
+        public override uint AssemblyTag => _parent.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parent.Resolve(tables);
+            _permissionSet.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _action = reader.Read<ushort>();

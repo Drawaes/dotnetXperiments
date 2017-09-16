@@ -6,21 +6,33 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class BlobIndex : IIndex
+    public class BlobIndex : Index
     {
-        private uint _rawIndex;
         private byte[] _content;
+        private bool _resolved;
 
         public int Index => (int)_rawIndex;
-
-        public void Resolve(MetaDataTables tables)
+        
+        internal override void Resolve(MetaDataTables tables)
         {
-            throw new NotImplementedException();
+            _resolved = true;
+            if (_rawIndex == 0)
+            {
+                return;
+            }
+            _content = tables.Blobs.GetBlob(_rawIndex);
         }
-
-        public void SetRawIndex(uint rawIndex)
+                
+        public byte[] Value
         {
-            _rawIndex = rawIndex;
+            get
+            {
+                if(!_resolved)
+                {
+                    throw new InvalidOperationException();
+                }
+                return _content;
+            }
         }
     }
 }

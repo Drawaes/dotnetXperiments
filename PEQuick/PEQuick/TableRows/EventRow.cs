@@ -9,10 +9,21 @@ namespace PEQuick.TableRows
 {
     public class EventRow : Row
     {
-        public EventAttrFlags Flags { get; set; }
         private StringIndex _nameIndex;
+
+        public EventAttrFlags Flags { get; set; }
         public TypeDefOrRefIndex EventType { get; set; }
-        
+        public override TableFlag Table => TableFlag.Event;
+        public override uint AssemblyTag => Parent.AssemblyTag;
+
+        public EventMapRow Parent { get; internal set; }
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _nameIndex.Resolve(tables);
+            EventType.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             Flags = reader.Read<EventAttrFlags>();

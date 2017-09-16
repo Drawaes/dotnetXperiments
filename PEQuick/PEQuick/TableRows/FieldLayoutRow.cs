@@ -11,6 +11,14 @@ namespace PEQuick.TableRows
         private uint _offset;
         private FieldIndex _field;
 
+        public override TableFlag Table => TableFlag.FieldLayout;
+        public override uint AssemblyTag => _field.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _field.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _offset = reader.Read<uint>();

@@ -11,6 +11,15 @@ namespace PEQuick.TableRows
         private HasFieldMarshalIndex _parent;
         private BlobIndex _nativeType;
 
+        public override TableFlag Table => TableFlag.FieldMarshal;
+        public override uint AssemblyTag => _parent.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parent.Resolve(tables);
+            _nativeType.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _parent = reader.ReadIndex<HasFieldMarshalIndex>();

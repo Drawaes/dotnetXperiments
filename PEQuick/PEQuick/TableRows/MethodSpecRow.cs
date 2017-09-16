@@ -11,6 +11,15 @@ namespace PEQuick.TableRows
         private MethodDefOrRefIndex _method;
         private BlobIndex _instantiation;
 
+        public override TableFlag Table => TableFlag.MethodSpec;
+        public override uint AssemblyTag => _method.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _method.Resolve(tables);
+            _instantiation.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _method = reader.ReadIndex<MethodDefOrRefIndex>();

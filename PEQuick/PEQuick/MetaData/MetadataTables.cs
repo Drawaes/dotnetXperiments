@@ -14,64 +14,99 @@ namespace PEQuick.MetaData
         private byte _majorVersion;
         private byte _minorVersion;
         private Dictionary<TableFlag, ITable> _tables = new Dictionary<TableFlag, ITable>();
+        private Dictionary<Type, ITable> _tablesByType = new Dictionary<Type, ITable>();
+        private PEFile _peFile;
+        private Dictionary<(uint AssemblyTag, uint Tag), Row> _assemblyIndexedRows;
+        private Dictionary<uint, Row> _indexedRows;
 
         private void LoadEmptyCollections()
         {
-            _tables.Add(TableFlag.Module, new Table<ModuleTableRow>(TableFlag.Module));
-            _tables.Add(TableFlag.Method, new Table<MethodRow>(TableFlag.Method));
-            _tables.Add(TableFlag.TypeRef, new Table<TypeRefRow>(TableFlag.TypeRef));
-            _tables.Add(TableFlag.TypeDef, new Table<TypeDefRow>(TableFlag.TypeDef));
-            _tables.Add(TableFlag.Field,new Table<FieldRow>(TableFlag.Field));
-            _tables.Add(TableFlag.Param, new Table<ParamRow>(TableFlag.Param));
-            _tables.Add(TableFlag.InterfaceImpl, new Table<InterfaceImplementationRow>(TableFlag.InterfaceImpl));
-            _tables.Add(TableFlag.MemberRef, new Table<MemberRefRow>(TableFlag.MemberRef));
-            _tables.Add(TableFlag.Constant, new Table<ConstantRow>(TableFlag.Constant));
-            _tables.Add(TableFlag.CustomAttribute, new Table<CustomAttributeRow>(TableFlag.CustomAttribute));
-            _tables.Add(TableFlag.FieldMarshal, new Table<FieldMarshalRow>(TableFlag.FieldMarshal));
-            _tables.Add(TableFlag.AssemblyRef, new Table<AssemblyRefRow>(TableFlag.AssemblyRef));
-            _tables.Add(TableFlag.DeclSecurity, new Table<DeclSecurityRow>(TableFlag.DeclSecurity));
-            _tables.Add(TableFlag.ClassLayout, new Table<ClassLayoutRow>(TableFlag.ClassLayout));
-            _tables.Add(TableFlag.FieldLayout, new Table<FieldLayoutRow>(TableFlag.FieldLayout));
-            _tables.Add(TableFlag.StandAloneSig, new Table<StandAloneSigRow>(TableFlag.StandAloneSig));
-            _tables.Add(TableFlag.EventMap, new Table<EventMapRow>(TableFlag.EventMap));
-            _tables.Add(TableFlag.Event, new Table<EventRow>(TableFlag.Event));
-            _tables.Add(TableFlag.PropertyMap, new Table<PropertyMapRow>(TableFlag.PropertyMap));
-            _tables.Add(TableFlag.Property, new Table<PropertyRow>(TableFlag.Property));
-            _tables.Add(TableFlag.MethodSemantics, new Table<MethodSemanticsRow>(TableFlag.MethodSemantics));
-            _tables.Add(TableFlag.MethodImpl, new Table<MethodImplRow>(TableFlag.MethodImpl));
-            _tables.Add(TableFlag.ModuleRef, new Table<ModuleRefRow>(TableFlag.ModuleRef));
-            _tables.Add(TableFlag.TypeSpec, new Table<TypeSpecRow>(TableFlag.TypeSpec));
-            _tables.Add(TableFlag.ImplMap, new Table<ImplMapRow>(TableFlag.ImplMap));
-            _tables.Add(TableFlag.FieldRVA, new Table<FieldRVA>(TableFlag.FieldRVA));
-            _tables.Add(TableFlag.Assembly, new Table<AssemblyRow>(TableFlag.Assembly));
-            _tables.Add(TableFlag.ManifestResource, new Table<ManifestResourceRow>(TableFlag.ManifestResource));
-            _tables.Add(TableFlag.NestedClass, new Table<NestedClassRow>(TableFlag.NestedClass));
-            _tables.Add(TableFlag.GenericParam, new Table<GenericParamRow>(TableFlag.GenericParam));
-            _tables.Add(TableFlag.MethodSpec, new Table<MethodSpecRow>(TableFlag.MethodSpec));
-    }
-        
-        public MetaDataTables(Span<byte> inputs, StringsSection strings, BlobSection blobs)
+            _tables.Add(TableFlag.Module, new Table<ModuleRow>());
+            _tables.Add(TableFlag.Method, new Table<MethodRow>());
+            _tables.Add(TableFlag.TypeRef, new Table<TypeRefRow>());
+            _tables.Add(TableFlag.TypeDef, new Table<TypeDefRow>());
+            _tables.Add(TableFlag.Field, new Table<FieldRow>());
+            _tables.Add(TableFlag.Param, new Table<ParamRow>());
+            _tables.Add(TableFlag.InterfaceImpl, new Table<InterfaceImplementationRow>());
+            _tables.Add(TableFlag.MemberRef, new Table<MemberRefRow>());
+            _tables.Add(TableFlag.Constant, new Table<ConstantRow>());
+            _tables.Add(TableFlag.CustomAttribute, new Table<CustomAttributeRow>());
+            _tables.Add(TableFlag.FieldMarshal, new Table<FieldMarshalRow>());
+            _tables.Add(TableFlag.AssemblyRef, new Table<AssemblyRefRow>());
+            _tables.Add(TableFlag.DeclSecurity, new Table<DeclSecurityRow>());
+            _tables.Add(TableFlag.ClassLayout, new Table<ClassLayoutRow>());
+            _tables.Add(TableFlag.FieldLayout, new Table<FieldLayoutRow>());
+            _tables.Add(TableFlag.StandAloneSig, new Table<StandAloneSigRow>());
+            _tables.Add(TableFlag.EventMap, new Table<EventMapRow>());
+            _tables.Add(TableFlag.Event, new Table<EventRow>());
+            _tables.Add(TableFlag.PropertyMap, new Table<PropertyMapRow>());
+            _tables.Add(TableFlag.Property, new Table<PropertyRow>());
+            _tables.Add(TableFlag.MethodSemantics, new Table<MethodSemanticsRow>());
+            _tables.Add(TableFlag.MethodImpl, new Table<MethodImplRow>());
+            _tables.Add(TableFlag.ModuleRef, new Table<ModuleRefRow>());
+            _tables.Add(TableFlag.TypeSpec, new Table<TypeSpecRow>());
+            _tables.Add(TableFlag.ImplMap, new Table<ImplMapRow>());
+            _tables.Add(TableFlag.FieldRVA, new Table<FieldRVA>());
+            _tables.Add(TableFlag.Assembly, new Table<AssemblyRow>());
+            _tables.Add(TableFlag.ManifestResource, new Table<ManifestResourceRow>());
+            _tables.Add(TableFlag.NestedClass, new Table<NestedClassRow>());
+            _tables.Add(TableFlag.GenericParam, new Table<GenericParamRow>());
+            _tables.Add(TableFlag.MethodSpec, new Table<MethodSpecRow>());
+        }
+
+        public MetaDataTables(Span<byte> inputs, PEFile peFile)
         {
-            _strings = strings;
-            _blobs = blobs;
+            _strings = peFile.Strings;
+            _blobs = peFile.Blobs;
+            _peFile = peFile;
             var reader = ReadHeaderAndSizes(inputs);
             LoadEmptyCollections();
 
-            for(var i = 0; i < 64; i++)
+            for (var i = 0; i < 64; i++)
             {
                 var currentSize = _sizes.GetSize((TableFlag)i);
-                if(currentSize > 0)
+                if (currentSize > 0)
                 {
                     _tables[(TableFlag)i].LoadFromMemory(ref reader, currentSize);
+                    var t = _tables[(TableFlag)i].GetType().GenericTypeArguments[0];
+                    _tablesByType.Add(t, _tables[(TableFlag)i]);
                 }
             }
-           
+
+            foreach (var kv in _tables)
+            {
+                kv.Value.Resolve(this);
+            }
+
+            _assemblyIndexedRows = new Dictionary<(uint AssemblyTag, uint Tag), Row>();
+            _indexedRows = new Dictionary<uint, Row>();
+            foreach (var kv in _tables)
+            {
+                foreach (var r in kv.Value)
+                {
+                    _assemblyIndexedRows.Add((r.AssemblyTag, r.Tag), r);
+                    _indexedRows.Add(r.Tag, r);
+                }
+            }
+
         }
 
         public Dictionary<TableFlag, int> Sizes => _sizes;
         public BlobSection Blobs => _blobs;
         public StringsSection Strings => _strings;
-                
+        public Dictionary<(uint AssemblyTag, uint Tag), Row> AssemblyIndexedRows => _assemblyIndexedRows;
+        public Dictionary<uint, Row> IndexedRows => _indexedRows;
+
+        public Span<byte> GetRVA(uint rva)
+        {
+            return _peFile.GetRVA(rva);
+        }
+
+        public Table<T> GetCollection<T>() where T : Row, new()
+        {
+            return (Table<T>)_tablesByType[typeof(T)];
+        }
+
         private MetaDataReader ReadHeaderAndSizes(Span<byte> inputs)
         {
             inputs = inputs.Slice(4);

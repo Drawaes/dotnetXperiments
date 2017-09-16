@@ -9,9 +9,13 @@ namespace PEQuick.TableRows
     {
         private int _index;
 
+        public abstract TableFlag Table { get; }
+        public uint Tag => (uint)(((byte)Table << 24) + _index);
         public abstract void Read(ref MetaDataReader reader);
-        //public abstract void Resolve(MetaDataTables tables);
+        public abstract void Resolve(MetaDataTables tables);
 
         public int Index { get => _index; set => _index = value; }
+
+        public abstract uint AssemblyTag { get; }
     }
 }

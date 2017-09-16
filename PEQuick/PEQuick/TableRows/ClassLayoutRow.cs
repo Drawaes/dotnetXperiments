@@ -12,6 +12,14 @@ namespace PEQuick.TableRows
         private uint _classSize;
         private TypeDefIndex _parent;
 
+        public override TableFlag Table => TableFlag.ClassLayout;
+        public override uint AssemblyTag => _parent.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parent.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _packingSize = reader.Read<ushort>();

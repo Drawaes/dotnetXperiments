@@ -15,8 +15,17 @@ namespace PEQuick.TableRows
         public ushort RevisionNumber { get; set; }
         public uint Flags { get; set; }
         public BlobIndex PublicKey { get; set; }
-        public StringIndex _nameIndex;
-        public StringIndex _cultureIndex;
+        public StringIndex Name { get; set; }
+        public override TableFlag Table => TableFlag.Assembly;
+        public StringIndex CultureIndex { get; set; }
+        public override uint AssemblyTag => Tag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            PublicKey.Resolve(tables);
+            Name.Resolve(tables);
+            CultureIndex.Resolve(tables);
+        }
 
         public override void Read(ref MetaDataReader reader)
         {
@@ -27,8 +36,8 @@ namespace PEQuick.TableRows
             RevisionNumber = reader.Read<ushort>();
             Flags = reader.Read<uint>();
             PublicKey = reader.ReadIndex<BlobIndex>();
-            _nameIndex = reader.ReadIndex<StringIndex>();
-            _cultureIndex = reader.ReadIndex<StringIndex>();
+            Name = reader.ReadIndex<StringIndex>();
+            CultureIndex = reader.ReadIndex<StringIndex>();
         }
     }
 }

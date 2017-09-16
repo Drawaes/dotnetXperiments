@@ -6,25 +6,31 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class ImplementationIndex : IIndex
+    public class ImplementationIndex : Index
     {
-        private uint _rawIndex;
+        private Row _row;
+        private const uint BitMask = 0b0000_0011;
 
-        public void Resolve(MetaDataTables tables)
+        internal override void Resolve(MetaDataTables tables)
         {
-            throw new NotImplementedException();
+            if (_rawIndex == 0)
+            {
+                return;
+            }
+            var flags = _rawIndex & BitMask;
+            var index = (int)(_rawIndex >> 2);
+            switch (flags)
+            {
+                case 0:
+                    //File
+                    throw new NotImplementedException();
+                case 1:
+                    _row = tables.GetCollection<AssemblyRefRow>()[index];
+                    break;
+                case 2:
+                    //exported type
+                    throw new NotImplementedException();
+            }
         }
-
-        public void SetRawIndex(uint rawIndex)
-        {
-            _rawIndex = rawIndex;
-        }
-
-        /*
-         * Implementation: 2 bits to encode tag Tag
-File 0
-AssemblyRef 1
-ExportedType 2
-         */
     }
 }

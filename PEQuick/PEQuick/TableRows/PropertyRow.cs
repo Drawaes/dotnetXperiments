@@ -13,6 +13,17 @@ namespace PEQuick.TableRows
         private StringIndex _nameIndex;
         private BlobIndex _type;
 
+        public override TableFlag Table => TableFlag.Property;
+        public override uint AssemblyTag => Parent.AssemblyTag;
+
+        public PropertyMapRow Parent { get; internal set; }
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _nameIndex.Resolve(tables);
+            _type.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _flags = reader.Read<PropertyAtrrFlags>();

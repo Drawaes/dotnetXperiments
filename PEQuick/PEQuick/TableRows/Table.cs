@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using PEQuick.MetaData;
@@ -7,26 +8,79 @@ namespace PEQuick.TableRows
 {
     public class Table<T> : ITable where T : Row, new()
     {
-        private List<T> _contents;
+        private List<T> _contents = new List<T>();
         private TableFlag _tableFlag;
-        
-        public Table(TableFlag tableFlag)
+
+        public Table()
         {
-            _tableFlag = tableFlag;
+            var newType = new T();
+            _tableFlag = newType.Table;
         }
 
         public TableFlag TableFlag => _tableFlag;
 
+        public T this[int index]
+        {
+            get
+            {
+                if (index == 0)
+                {
+                    return null;
+                }
+                index--;
+                if (index == _contents.Count)
+                {
+                    return null;
+                }
+                return _contents[index];
+            }
+        }
+
+        internal PropertyRow[] GetRange(object index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T[] GetRange(int first, int end)
+        {
+            if(first == end)
+            {
+                return new T[0];
+            }
+            first = first - 1;
+            end = Math.Min(_contents.Count, end - 1);
+            var returnArray = new T[end - first];
+            for(var i = first; i < end; i++)
+            {
+                returnArray[i-first] = _contents[i];
+            }
+            return returnArray;
+        }
+
         public void LoadFromMemory(ref MetaDataReader reader, int size)
         {
-            _contents = new List<T>();
-            for (var i = 1; i <= size; i++)
+            for (var i = 0; i < size; i++)
             {
                 var n = new T();
                 n.Read(ref reader);
-                n.Index = i;
                 _contents.Add(n);
+                n.Index = _contents.Count;
             }
         }
+
+        public void Resolve(MetaDataTables metaDataTables)
+        {
+            if (_contents == null)
+            {
+                return;
+            }
+            foreach (var c in _contents)
+            {
+                c.Resolve(metaDataTables);
+            }
+        }
+
+        public IEnumerator<Row> GetEnumerator() => _contents.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _contents.GetEnumerator();
     }
 }

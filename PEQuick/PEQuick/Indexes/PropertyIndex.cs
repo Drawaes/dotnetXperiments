@@ -6,18 +6,15 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public struct PropertyIndex:IIndex
+    public class PropertyIndex : Index
     {
-        private uint _rawIndex;
+        private Row _row;
 
-        public void Resolve(MetaDataTables tables)
-        {
-            throw new NotImplementedException();
-        }
+        public int Index => checked((int)_rawIndex);
 
-        public void SetRawIndex(uint rawIndex)
+        internal override void Resolve(MetaDataTables tables)
         {
-            _rawIndex = rawIndex;
+            _row = tables.GetCollection<PropertyRow>()[Index];
         }
     }
 }

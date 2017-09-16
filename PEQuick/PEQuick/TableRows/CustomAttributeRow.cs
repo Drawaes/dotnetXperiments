@@ -12,6 +12,16 @@ namespace PEQuick.TableRows
         private CustomAttributeTypeIndex _type;
         private BlobIndex _value;
 
+        public override TableFlag Table => TableFlag.CustomAttribute;
+        public override uint AssemblyTag => _parent.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parent.Resolve(tables);
+            _type.Resolve(tables);
+            _value.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _parent = reader.ReadIndex<HasCustomAttributeIndex>();

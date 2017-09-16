@@ -6,18 +6,12 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class DeclSecurity : IIndex
+    public class DeclSecurity : Index
     {
-        private uint _rawIndex;
 
-        public void Resolve(MetaDataTables tables)
+        internal override void Resolve(MetaDataTables tables)
         {
             throw new NotImplementedException();
-        }
-
-        public void SetRawIndex(uint rawIndex)
-        {
-            _rawIndex = rawIndex;
         }
     }
 }

@@ -12,6 +12,15 @@ namespace PEQuick.TableRows
         private HasConstantIndex _parent;
         private BlobIndex _value;
 
+        public override TableFlag Table => TableFlag.Constant;
+        public override uint AssemblyTag => _parent.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _parent.Resolve(tables);
+            _value.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _type = reader.Read<ushort>();

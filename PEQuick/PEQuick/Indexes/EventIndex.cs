@@ -6,18 +6,15 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public struct EventIndex : IIndex
+    public class EventIndex : Index
     {
-        private uint _rawIndex;
+        private EventRow _row;
 
-        public void Resolve(MetaDataTables tables)
-        {
-            throw new NotImplementedException();
-        }
+        public int Index => checked((int)_rawIndex);
 
-        public void SetRawIndex(uint rawIndex)
+        internal override void Resolve(MetaDataTables tables)
         {
-            _rawIndex = rawIndex;
+            _row = tables.GetCollection<EventRow>()[Index];
         }
     }
 }

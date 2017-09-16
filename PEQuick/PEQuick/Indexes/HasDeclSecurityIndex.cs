@@ -6,26 +6,29 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class HasDeclSecurityIndex : IIndex
+    public class HasDeclSecurityIndex : Index
     {
-        private uint _rawIndex;
+        private Row _row;
+        private const uint BitMask = 0b0000_0011;
 
-        public void Resolve(MetaDataTables tables)
+        public Row Row => _row;
+
+        internal override void Resolve(MetaDataTables tables)
         {
-            throw new NotImplementedException();
+            var flag = _rawIndex & BitMask;
+            var index = (int)(_rawIndex >> 2);
+            switch (flag)
+            {
+                case 0:
+                    _row = tables.GetCollection<TypeDefRow>()[index];
+                    break;
+                case 1:
+                    _row = tables.GetCollection<MethodRow>()[index];
+                    break;
+                case 2:
+                    _row = tables.GetCollection<AssemblyRow>()[index];
+                    break;
+            }
         }
-
-        public void SetRawIndex(uint rawIndex)
-        {
-            _rawIndex = rawIndex;
-        }
-
-        /*
-         * HasDeclSecurity: 2 bits to encode tag Tag
-TypeDef 0
-MethodDef 1
-Assembly 2
-
-         */
     }
 }

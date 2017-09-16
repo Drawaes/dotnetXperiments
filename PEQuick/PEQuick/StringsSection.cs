@@ -15,9 +15,9 @@ namespace PEQuick
             _section = input.ToArray();
         }
 
-        public string GetString(StringIndex stringIndex)
+        public string GetString(uint stringIndex)
         {
-            var span = _section.AsSpan().Slice(stringIndex.Index);
+            var span = _section.AsSpan().Slice((int)stringIndex);
             var nextNull = span.IndexOf(0);
             return span.Slice(0,nextNull).ReadNullString();
         }

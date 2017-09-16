@@ -6,25 +6,14 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public struct ParamIndex:IIndex
+    public class ParamIndex : Index
     {
-        private uint _rawIndex;
-                
-        public uint Index => _rawIndex;
+        private ParamRow _param;
+        public int Index => checked((int)_rawIndex);
 
-        public void Resolve(MetaDataTables tables)
+        internal override void Resolve(MetaDataTables tables)
         {
-            throw new NotImplementedException();
+            _param = tables.GetCollection<ParamRow>()[Index];
         }
-
-        public void SetRawIndex(uint rawIndex) => _rawIndex = rawIndex;
-
-        /*
-         * ResolutionScope: 2 bits to encode tag Tag
-Module 0
-ModuleRef 1
-AssemblyRef 2
-TypeRef 3
-         */
     }
 }

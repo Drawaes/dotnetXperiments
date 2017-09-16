@@ -8,11 +8,21 @@ namespace PEQuick.TableRows
 {
     public class ImplMapRow : Row
     {
-        public ushort MappingFlags;
-        public MemberForwardedIndex MemberForwarded;
         private StringIndex _importName;
         private StringIndex _importScope;
-        
+
+        public ushort MappingFlags { get; set; }
+        public MemberForwardedIndex MemberForwarded { get; set; }
+        public override TableFlag Table => TableFlag.ImplMap;
+        public override uint AssemblyTag => MemberForwarded.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            MemberForwarded.Resolve(tables);
+            _importName.Resolve(tables);
+            _importScope.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             MappingFlags = reader.Read<ushort>();

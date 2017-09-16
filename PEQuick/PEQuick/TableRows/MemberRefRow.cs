@@ -12,6 +12,16 @@ namespace PEQuick.TableRows
         private StringIndex _nameIndex;
         private BlobIndex _signature;
 
+        public override TableFlag Table => TableFlag.MemberRef;
+        public override uint AssemblyTag => _class.Row.AssemblyTag;
+
+        public override void Resolve(MetaDataTables tables)
+        {
+            _class.Resolve(tables);
+            _nameIndex.Resolve(tables);
+            _signature.Resolve(tables);
+        }
+
         public override void Read(ref MetaDataReader reader)
         {
             _class = reader.ReadIndex<MemberRefParentIndex>();

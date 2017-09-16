@@ -6,19 +6,16 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class FieldIndex:IIndex
+    public class FieldIndex : Index
     {
-        private uint _rawIndex;
-                
-        public uint Index => _rawIndex;
+        private FieldRow _field;
 
-        public void Resolve(MetaDataTables tables)
+        public int Index => checked((int)_rawIndex);
+        public FieldRow Row => _field;
+
+        internal override void Resolve(MetaDataTables tables)
         {
-            throw new NotImplementedException();
+            _field = tables.GetCollection<FieldRow>()[Index];
         }
-
-        public void SetRawIndex(uint rawIndex) => _rawIndex = rawIndex;
-
-     
     }
 }

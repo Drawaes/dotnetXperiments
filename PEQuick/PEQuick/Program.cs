@@ -7,14 +7,18 @@ namespace PEQuick
     {
         static void Main(string[] args)
         {
-            var fileList = new string[] { "System.Console.dll" }; // ,
-            var files = new Dictionary<string, PEFile>(StringComparer.OrdinalIgnoreCase);
+            var fileList = new string[] {"mergetest.dll", "System.Console.dll"};
+            var files = new List< PEFile>();
 
             foreach (var fl in fileList)
             {
-                files.Add(fl, PEFile.Load("C:\\code\\combined\\"+ fl));
+                files.Add(PEFile.Load("C:\\code\\combined\\"+ fl));
             }
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Starting import");
+
+            var import = new Importer.DependencyWalker(files[0], files[1]);
+            import.FindImportPoints();
+
         }
     }
 }
