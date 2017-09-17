@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Importer;
 using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
@@ -17,5 +18,10 @@ namespace PEQuick.TableRows
         public int Index { get => _index; set => _index = value; }
 
         public abstract uint AssemblyTag { get; }
+
+        public virtual void GetDependencies(DependencyGather tagQueue)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

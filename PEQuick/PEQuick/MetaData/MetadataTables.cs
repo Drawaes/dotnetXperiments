@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using PEQuick.MetaData;
 using PEQuick.TableRows;
@@ -52,6 +53,17 @@ namespace PEQuick.MetaData
             _tables.Add(TableFlag.NestedClass, new Table<NestedClassRow>());
             _tables.Add(TableFlag.GenericParam, new Table<GenericParamRow>());
             _tables.Add(TableFlag.MethodSpec, new Table<MethodSpecRow>());
+        }
+
+        internal MethodRow FindMethodDef(Row method)
+        {
+            if(!(method is MemberRefRow member))
+            {
+                throw new InvalidOperationException();
+            }
+
+            var methods = _tables[TableFlag.Method];
+            return methods.Cast<MethodRow>().Single(m => m.Name == member.Name && m.Signature.SequenceEqual(member.Signature));
         }
 
         public MetaDataTables(Span<byte> inputs, PEFile peFile)

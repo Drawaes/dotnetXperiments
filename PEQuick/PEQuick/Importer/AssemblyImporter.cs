@@ -2,26 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PEQuick.MetaData;
 using PEQuick.TableRows;
 
 namespace PEQuick.Importer
 {
-    public class DependencyWalker
+    public class AssemblyImporter
     {
         private PEFile _masterPE;
         private PEFile _sourcePE;
 
-        public DependencyWalker(PEFile masterPE, PEFile sourcePE)
+        public AssemblyImporter(PEFile masterPE, PEFile sourcePE)
         {
             _masterPE = masterPE;
             _sourcePE = sourcePE;
         }
 
+        private MetaDataTables MasterMeta => _masterPE.MetaDataTables;
+        private MetaDataTables SourceMeta => _sourcePE.MetaDataTables;
+
         public void FindImportPoints()
         {
-            var sourceAssembly = _sourcePE.MetaDataTables.GetCollection<AssemblyRow>()[1];
+            var sourceAssembly = SourceMeta.GetCollection<AssemblyRow>()[1];
             AssemblyRefRow destAssembly = null;
-            foreach (var mod in _masterPE.MetaDataTables.GetCollection<AssemblyRefRow>().Cast<AssemblyRefRow>())
+            foreach (var mod in MasterMeta.GetCollection<AssemblyRefRow>().Cast<AssemblyRefRow>())
             {
                 if (sourceAssembly.Name.Value == mod.Name.Value)
                 {
@@ -36,9 +40,15 @@ namespace PEQuick.Importer
                 throw new InvalidOperationException();
             }
             var destToken = destAssembly.Tag;
+            var importingRows = MasterMeta.AssemblyIndexedRows.Where(ai => ai.Key.AssemblyTag == destToken).ToArray();
+            var methods = importingRows.Where(ir => ir.Value.Table == TableFlag.MemberRef).Select(m => SourceMeta.FindMethodDef(m.Value));
 
-
-
+            var dep = new DependencyGather(SourceMeta);
+            foreach(var m in methods)
+            {
+                dep.SeedTag(m.Tag);
+            }
+            dep.WalkDependencies();
         }
 
         public void WriteSpan(Span<byte> input, string file)

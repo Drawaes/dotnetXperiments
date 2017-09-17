@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -27,6 +28,11 @@ namespace PEQuick.TableRows
             _resolutionScope = reader.ReadIndex<ResolutionScopeIndex>();
             _nameIndex = reader.ReadIndex<StringIndex>();
             _namespaceIndex = reader.ReadIndex<StringIndex>();
+        }
+
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(_resolutionScope.Row);
         }
     }
 }

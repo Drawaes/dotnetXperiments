@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -30,6 +31,12 @@ namespace PEQuick.TableRows
             _signature = reader.ReadIndex<BlobIndex>();
         }
 
-        public override string ToString() => _nameIndex.Value;
+        public override string ToString() => $"{Table} - {_nameIndex.Value}";
+
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(Parent);
+            //Todo Read Signature header to make sure we get dependent types
+        }
     }
 }

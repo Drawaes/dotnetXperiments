@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using PEQuick.Flags;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -21,6 +22,9 @@ namespace PEQuick.TableRows
         public override TableFlag Table => TableFlag.Method;
         public override uint AssemblyTag => Parent.AssemblyTag;
         public TypeDefRow Parent { get; set; }
+        public string Name => _nameIndex.Value;
+        public Span<byte> Signature => _signature.Value.AsSpan();
+        public byte[] MethodBody => _methodBody;
 
         public override void Resolve(MetaDataTables tables)
         {
@@ -36,33 +40,7 @@ namespace PEQuick.TableRows
 
             ResolveMethodBody(tables);
         }
-
-        private void ResolveMethodBody(MetaDataTables tables)
-        {
-            if (_rva == 0)
-            {
-                return;
-            }
-            var methodBody = tables.GetRVA(_rva);
-            var methodFormat = methodBody[0] & 0x03;
-            ushort size;
-            switch (methodFormat)
-            {
-                case 0x02:
-                    //TinyFormat
-                    size = (ushort)(methodBody[0] >> 2);
-                    break;
-                case 0x03:
-                    //FatFormat
-                    methodBody.Slice(2).Read(out size);
-                    size++;
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-            _methodBody = methodBody.Slice(0, (size + 1)).ToArray();
-        }
-
+        
         public override void Read(ref MetaDataReader reader)
         {
             _rva = reader.Read<uint>();
@@ -73,7 +51,29 @@ namespace PEQuick.TableRows
             _firstParam = reader.ReadIndex<ParamIndex>();
         }
 
-        public byte[] Signature => _signature.Value;
-        public byte[] MethodBody => _methodBody;
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(Parent.Tag);
+            tagQueue.SeedTags(_params);
+            //TODO parse body
+        }
+
+        private void ParseBody()
+        {
+            var methodFormat = (MethodBodyFormat) MethodBody[0] & MethodBodyFormat.Mask;
+            switch(methodFormat)
+            {
+                case MethodBodyFormat.Fat:
+                    throw new NotImplementedException();
+                case MethodBodyFormat.Tiny:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void ParseTinyBody()
+        {
+            var size = MethodBody[0] >> 2;
+
+        }
     }
 }

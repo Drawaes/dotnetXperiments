@@ -14,6 +14,8 @@ namespace PEQuick.TableRows
 
         public override TableFlag Table => TableFlag.MemberRef;
         public override uint AssemblyTag => _class.Row.AssemblyTag;
+        public string Name => _nameIndex.Value;
+        public Span<byte> Signature => _signature.Value.AsSpan();
 
         public override void Resolve(MetaDataTables tables)
         {

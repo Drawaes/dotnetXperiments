@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -42,5 +43,10 @@ namespace PEQuick.TableRows
         }
 
         public override uint AssemblyTag => Tag;
+
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            //Nothing to add
+        }
     }
 }

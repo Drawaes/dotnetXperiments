@@ -1,4 +1,5 @@
 ﻿using System;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -26,6 +27,12 @@ namespace PEQuick.TableRows
             _flags = reader.Read<ushort>();
             _sequence = reader.Read<ushort>();
             _nameIndex = reader.ReadIndex<StringIndex>();
+        }
+
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(Parent.Tag);
+            //Todo where is the "type" that the parm is?
         }
     }
 }

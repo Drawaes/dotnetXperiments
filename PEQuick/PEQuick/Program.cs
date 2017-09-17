@@ -16,7 +16,7 @@ namespace PEQuick
             }
             Console.WriteLine("Starting import");
 
-            var import = new Importer.DependencyWalker(files[0], files[1]);
+            var import = new Importer.AssemblyImporter(files[0], files[1]);
             import.FindImportPoints();
 
         }
