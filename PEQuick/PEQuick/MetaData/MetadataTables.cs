@@ -12,6 +12,7 @@ namespace PEQuick.MetaData
         private Dictionary<TableFlag, int> _sizes = new Dictionary<TableFlag, int>();
         private StringsSection _strings;
         private BlobSection _blobs;
+        private UserStringSection _userStrings;
         private byte _majorVersion;
         private byte _minorVersion;
         private Dictionary<TableFlag, ITable> _tables = new Dictionary<TableFlag, ITable>();
@@ -70,6 +71,7 @@ namespace PEQuick.MetaData
         {
             _strings = peFile.Strings;
             _blobs = peFile.Blobs;
+            _userStrings = peFile.UserStrings;
             _peFile = peFile;
             var reader = ReadHeaderAndSizes(inputs);
             LoadEmptyCollections();
@@ -114,7 +116,7 @@ namespace PEQuick.MetaData
             var index = tag & 0x00FF_FFFF;
             if (table == TableFlag.UserString)
             {
-                throw new NotImplementedException("User strings");
+                return _userStrings.GetRow(index);
             }
             return _tables[table].GetRow((int)index);
         }

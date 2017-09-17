@@ -21,6 +21,7 @@ namespace PEQuick
         private CliDataHeader _metaDataHeader;
         private MetaDataTables _metaDataTables;
         private StringsSection _strings;
+        private UserStringSection _userStrings;
         private GuidSection _guidSection;
         private BlobSection _blobs;
 
@@ -63,6 +64,7 @@ namespace PEQuick
         internal GuidSection Guids => _guidSection;
         internal StringsSection Strings => _strings;
         internal BlobSection Blobs => _blobs;
+        internal UserStringSection UserStrings => _userStrings;
 
         public MetaDataTables MetaDataTables => _metaDataTables;
 
@@ -94,6 +96,7 @@ namespace PEQuick
                     case "#~":
                         break;
                     case "#US":
+                        _userStrings = new UserStringSection(section.Slice((int)sh.Offset, (int)sh.Size));
                         break;
                     default:
                         throw new NotImplementedException();
