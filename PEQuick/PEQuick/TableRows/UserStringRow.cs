@@ -14,6 +14,7 @@ namespace PEQuick.TableRows
         {
             Value = s;
             Token = token;
+            Index = (int)index;
         }
 
         public byte Token { get; set; }
@@ -34,6 +35,24 @@ namespace PEQuick.TableRows
         public override void GetDependencies(DependencyGather tagQueue)
         {
             //Nothing to do
+        }
+
+        public override int GetHashCode()
+        {
+            if(Value == null)
+            {
+                return 0;
+            }
+            return Value.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is UserStringRow stringRow)
+            {
+                return stringRow.Value == Value;
+            }
+            return false;
         }
     }
 }

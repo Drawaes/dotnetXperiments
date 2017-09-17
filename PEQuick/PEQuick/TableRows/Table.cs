@@ -79,5 +79,11 @@ namespace PEQuick.TableRows
 
         public IEnumerator<Row> GetEnumerator() => _contents.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => _contents.GetEnumerator();
+
+        public void AddRow(Row newRow)
+        {
+            _contents.Add((T)newRow);
+            newRow.UpdateRowIndex(_contents.Count);
+        }
     }
 }

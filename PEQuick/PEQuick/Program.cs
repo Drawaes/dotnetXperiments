@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PEQuick.Output;
 
 namespace PEQuick
 {
@@ -14,11 +15,18 @@ namespace PEQuick
             {
                 files.Add(PEFile.Load("C:\\code\\combined\\"+ fl));
             }
+
+            Console.WriteLine("Write PE File");
+            var writer = new PEWriter(files[0], true);
+            writer.Write(@"C:\code\output.dll");
+
             Console.WriteLine("Starting import");
+
+
 
             var import = new Importer.AssemblyImporter(files[0], files[1]);
             import.FindImportPoints();
-
+            import.ImportDependencies();
         }
     }
 }

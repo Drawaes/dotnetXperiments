@@ -12,6 +12,7 @@ namespace PEQuick.Importer
         private PEFile _masterPE;
         private PEFile _sourcePE;
         private DependencyGather _dependencies;
+        private Dictionary<uint, uint> _oldToNewTokenMap = new Dictionary<uint, uint>();
 
         public AssemblyImporter(PEFile masterPE, PEFile sourcePE)
         {
@@ -47,6 +48,19 @@ namespace PEQuick.Importer
             _dependencies = new DependencyGather(SourceMeta);
             _dependencies.SeedTags(methods);
             _dependencies.WalkDependencies();
+        }
+
+        public void ImportDependencies()
+        {
+            foreach(var kv in _dependencies.Dependencies)
+            {
+                var table = _masterPE.MetaDataTables.GetTable(kv.Value.Table);
+                var oldToken = kv.Value.Tag;
+                table.AddRow(kv.Value);
+                _oldToNewTokenMap.Add(oldToken, kv.Value.Tag);
+            }
+
+            
         }
     }
 }

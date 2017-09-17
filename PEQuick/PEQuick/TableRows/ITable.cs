@@ -11,5 +11,6 @@ namespace PEQuick.TableRows
         void LoadFromMemory(ref MetaDataReader reader, int size);
         void Resolve(MetaDataTables metaDataTables);
         Row GetRow(int index);
+        void AddRow(Row newRow);
     }
 }

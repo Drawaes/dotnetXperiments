@@ -24,7 +24,7 @@ namespace PEQuick
         private UserStringSection _userStrings;
         private GuidSection _guidSection;
         private BlobSection _blobs;
-
+        
         internal unsafe PEFile(byte[] file)
         {
             _originalFile = file;
@@ -36,9 +36,6 @@ namespace PEQuick
             s = s.CheckForMagicValue(MagicNumbers.PEMagicNumber);
             s = s.Read(out _peHeader);
             s = s.Read(out _peOptions);
-            s = s.Read(out ushort subsystem);
-            s = s.Read(out ushort dllFlags);
-            var size = sizeof(MemorySize32);
             if (_peOptions.Is64)
             {
                 s = s.Read(out MemorySize64 memSize64);
@@ -65,6 +62,10 @@ namespace PEQuick
         internal StringsSection Strings => _strings;
         internal BlobSection Blobs => _blobs;
         internal UserStringSection UserStrings => _userStrings;
+        internal PEHeader PEHeader => _peHeader;
+        internal PEOptions PEOptions => _peOptions;
+        internal IMemorySize MemorySizes => _memorySize;
+        internal DataDirectories DataDirectories => _dataDirectories;
 
         public MetaDataTables MetaDataTables => _metaDataTables;
 

@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PEQuick.MetaData;
 using PEQuick.TableRows;
 
 namespace PEQuick
 {
-    public class UserStringSection
+    public class UserStringSection :ITable
     {
         private Dictionary<int, TableRows.UserStringRow> _strings = new Dictionary<int, TableRows.UserStringRow>();
         
@@ -46,13 +48,51 @@ namespace PEQuick
             }
         }
 
-        public UserStringRow GetRow(uint index)
+        public TableFlag TableFlag => throw new NotImplementedException();
+
+        public void AddRow(Row newRow)
         {
-            if (_strings.TryGetValue((int)index, out UserStringRow row))
+            _strings.Add(_strings.Max(kv => kv.Key) + 1, (UserStringRow)newRow);
+        }
+
+        public IEnumerator<Row> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Row GetRow(int index)
+        {
+            if (_strings.TryGetValue(index, out UserStringRow row))
             {
                 return row;
             }
             return _strings.Values.First();
+        }
+
+        public void LoadFromMemory(ref MetaDataReader reader, int size)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void MergeDuplicates()
+        {
+            foreach(var kv in _strings.GroupBy(kv => kv.Value))
+            {
+                if(kv.Count() > 1)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+
+        public void Resolve(MetaDataTables metaDataTables)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 }

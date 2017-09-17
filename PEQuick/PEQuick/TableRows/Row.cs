@@ -23,5 +23,10 @@ namespace PEQuick.TableRows
         {
             throw new NotImplementedException();
         }
+
+        public virtual void UpdateRowIndex(int newIndex)
+        {
+            _index = newIndex;
+        }
     }
 }

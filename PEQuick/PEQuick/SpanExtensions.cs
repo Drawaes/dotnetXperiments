@@ -18,6 +18,20 @@ namespace PEQuick
             return span.Slice(size);
         }
 
+        public unsafe static Span<byte> Write<T>(this Span<byte> input, T[] values)
+            where T : struct
+        {
+            var size = Unsafe.SizeOf<T>() * values.Length;
+            if(input.Length < size)
+            {
+                throw new InvalidOperationException();
+            }
+            var span = new Span<T>(values).AsBytes();
+            span.CopyTo(input);
+            input = input.Slice(size);
+            return input;
+        }
+
         public static Span<byte> ReadEncodedInt(this Span<byte> input, out uint output)
         {
             const byte oneByteFilter = 0b1000_0000;
@@ -59,6 +73,21 @@ namespace PEQuick
             {
                 return Marshal.PtrToStringUTF8((IntPtr)ptr, input.Length);
             }
+        }
+
+        public unsafe static Span<byte> Write<T>(this Span<byte> input, T value)
+            where T : struct
+        {
+            var length = Unsafe.SizeOf<T>();
+            if(input.Length < length)
+            {
+                throw new NotImplementedException();
+            }
+            fixed (void* ptr = &input.DangerousGetPinnableReference())
+            {
+                Unsafe.Write(ptr, value);
+            }
+            return input.Slice(length);
         }
 
         public unsafe static Span<byte> CheckForMagicValue<T>(this Span<byte> span, T magicNumber) where T : struct

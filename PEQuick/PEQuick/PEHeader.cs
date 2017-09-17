@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using PEQuick.Flags;
 
 namespace PEQuick
 {
@@ -14,6 +15,6 @@ namespace PEQuick
         public uint OffsetToSymbolTable;
         public uint NumberOfSymbols;
         public ushort SizeOfOptionHeader;
-        public ushort Characteristics;
+        public PECharacteristicFlags Characteristics;
     }
 }

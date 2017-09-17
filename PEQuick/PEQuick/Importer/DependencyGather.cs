@@ -17,6 +17,8 @@ namespace PEQuick.Importer
             _metaData = metadata;
         }
 
+        public Dictionary<uint, Row> Dependencies => _touchedRows;
+
         public void SeedTag(Row row)
         {
             if (row == null)

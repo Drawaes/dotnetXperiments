@@ -116,7 +116,7 @@ namespace PEQuick.MetaData
             var index = tag & 0x00FF_FFFF;
             if (table == TableFlag.UserString)
             {
-                return _userStrings.GetRow(index);
+                return _userStrings.GetRow((int)index);
             }
             return _tables[table].GetRow((int)index);
         }
@@ -129,6 +129,15 @@ namespace PEQuick.MetaData
         public Table<T> GetCollection<T>() where T : Row, new()
         {
             return (Table<T>)_tablesByType[typeof(T)];
+        }
+
+        public ITable GetTable(TableFlag t)
+        {
+            if(t == TableFlag.UserString)
+            {
+                return _userStrings;
+            }
+            return _tables[t];
         }
 
         private MetaDataReader ReadHeaderAndSizes(Span<byte> inputs)
