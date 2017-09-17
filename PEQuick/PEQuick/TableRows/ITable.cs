@@ -10,5 +10,6 @@ namespace PEQuick.TableRows
         TableFlag TableFlag { get; }
         void LoadFromMemory(ref MetaDataReader reader, int size);
         void Resolve(MetaDataTables metaDataTables);
+        Row GetRow(int index);
     }
 }

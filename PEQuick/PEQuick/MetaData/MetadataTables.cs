@@ -57,7 +57,7 @@ namespace PEQuick.MetaData
 
         internal MethodRow FindMethodDef(Row method)
         {
-            if(!(method is MemberRefRow member))
+            if (!(method is MemberRefRow member))
             {
                 throw new InvalidOperationException();
             }
@@ -107,7 +107,17 @@ namespace PEQuick.MetaData
         public BlobSection Blobs => _blobs;
         public StringsSection Strings => _strings;
         public Dictionary<(uint AssemblyTag, uint Tag), Row> AssemblyIndexedRows => _assemblyIndexedRows;
-        public Dictionary<uint, Row> IndexedRows => _indexedRows;
+
+        public Row GetRowByTag(uint tag)
+        {
+            var table = (TableFlag)(tag >> 24);
+            var index = tag & 0x00FF_FFFF;
+            if (table == TableFlag.UserString)
+            {
+                throw new NotImplementedException("User strings");
+            }
+            return _tables[table].GetRow((int)index);
+        }
 
         public Span<byte> GetRVA(uint rva)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -24,6 +25,12 @@ namespace PEQuick.TableRows
         {
             _method = reader.ReadIndex<MethodDefOrRefIndex>();
             _instantiation = reader.ReadIndex<BlobIndex>();
+        }
+
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(_method.Row);
+            //TODO calculate anything extra from the instantiation
         }
     }
 }

@@ -61,5 +61,6 @@ namespace PEQuick.MetaData
         ImportScope = 0x35,
         StateMachineMethod = 0x36,
         CustomDebugInformation = 0x37,
+        UserString = 0x70,
     }
 }

@@ -36,23 +36,20 @@ namespace PEQuick.TableRows
             }
         }
 
-        internal PropertyRow[] GetRange(object index)
-        {
-            throw new NotImplementedException();
-        }
+        public Row GetRow(int index) => _contents[index - 1];
 
         public T[] GetRange(int first, int end)
         {
-            if(first == end)
+            if (first == end)
             {
                 return new T[0];
             }
             first = first - 1;
             end = Math.Min(_contents.Count, end - 1);
             var returnArray = new T[end - first];
-            for(var i = first; i < end; i++)
+            for (var i = first; i < end; i++)
             {
-                returnArray[i-first] = _contents[i];
+                returnArray[i - first] = _contents[i];
             }
             return returnArray;
         }

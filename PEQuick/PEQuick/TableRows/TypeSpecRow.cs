@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using PEQuick.Flags;
+using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -50,6 +51,12 @@ namespace PEQuick.TableRows
         public override void Read(ref MetaDataReader reader)
         {
             _signature = reader.ReadIndex<BlobIndex>();
+        }
+
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(_parentRow.Row);
+            //TODO check for arrays etc
         }
     }
 }

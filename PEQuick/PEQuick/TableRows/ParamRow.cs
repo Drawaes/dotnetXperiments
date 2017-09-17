@@ -31,7 +31,7 @@ namespace PEQuick.TableRows
 
         public override void GetDependencies(DependencyGather tagQueue)
         {
-            tagQueue.SeedTag(Parent.Tag);
+            tagQueue.SeedTag(Parent);
             //Todo where is the "type" that the parm is?
         }
     }

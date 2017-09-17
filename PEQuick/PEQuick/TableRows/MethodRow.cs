@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using PEQuick.Flags;
+using PEQuick.IL;
 using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
@@ -16,7 +17,7 @@ namespace PEQuick.TableRows
         private StringIndex _nameIndex;
         private BlobIndex _signature;
         private ParamIndex _firstParam;
-        private byte[] _methodBody;
+        private MethodBody _methodBody;
         private ParamRow[] _params;
 
         public override TableFlag Table => TableFlag.Method;
@@ -24,8 +25,7 @@ namespace PEQuick.TableRows
         public TypeDefRow Parent { get; set; }
         public string Name => _nameIndex.Value;
         public Span<byte> Signature => _signature.Value.AsSpan();
-        public byte[] MethodBody => _methodBody;
-
+        
         public override void Resolve(MetaDataTables tables)
         {
             _nameIndex.Resolve(tables);
@@ -38,7 +38,10 @@ namespace PEQuick.TableRows
                 f.Parent = this;
             }
 
-            ResolveMethodBody(tables);
+            if(_rva != 0)
+            {
+                _methodBody = new MethodBody(_rva, tables);
+            }
         }
         
         public override void Read(ref MetaDataReader reader)
@@ -53,27 +56,13 @@ namespace PEQuick.TableRows
 
         public override void GetDependencies(DependencyGather tagQueue)
         {
-            tagQueue.SeedTag(Parent.Tag);
+            tagQueue.SeedTag(Parent);
             tagQueue.SeedTags(_params);
-            //TODO parse body
-        }
-
-        private void ParseBody()
-        {
-            var methodFormat = (MethodBodyFormat) MethodBody[0] & MethodBodyFormat.Mask;
-            switch(methodFormat)
+            if (_methodBody != null)
             {
-                case MethodBodyFormat.Fat:
-                    throw new NotImplementedException();
-                case MethodBodyFormat.Tiny:
-                    throw new NotImplementedException();
+                tagQueue.SeedTags(_methodBody.DependentTags);
             }
-        }
-
-        private void ParseTinyBody()
-        {
-            var size = MethodBody[0] >> 2;
-
+            //TODO parse body
         }
     }
 }

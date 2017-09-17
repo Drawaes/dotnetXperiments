@@ -11,6 +11,7 @@ namespace PEQuick.Importer
     {
         private PEFile _masterPE;
         private PEFile _sourcePE;
+        private DependencyGather _dependencies;
 
         public AssemblyImporter(PEFile masterPE, PEFile sourcePE)
         {
@@ -43,26 +44,9 @@ namespace PEQuick.Importer
             var importingRows = MasterMeta.AssemblyIndexedRows.Where(ai => ai.Key.AssemblyTag == destToken).ToArray();
             var methods = importingRows.Where(ir => ir.Value.Table == TableFlag.MemberRef).Select(m => SourceMeta.FindMethodDef(m.Value));
 
-            var dep = new DependencyGather(SourceMeta);
-            foreach(var m in methods)
-            {
-                dep.SeedTag(m.Tag);
-            }
-            dep.WalkDependencies();
-        }
-
-        public void WriteSpan(Span<byte> input, string file)
-        {
-            var sb = new StringBuilder();
-            var counter = 0;
-            while (input.Length > 0)
-            {
-                var sw = input.Slice(0, 8);
-                input = input.Slice(8);
-                sb.Append(counter.ToString("0000")).Append("    ").AppendLine(BitConverter.ToString(sw.ToArray()));
-                counter += 8;
-            }
-            System.IO.File.WriteAllText(file, sb.ToString());
+            _dependencies = new DependencyGather(SourceMeta);
+            _dependencies.SeedTags(methods);
+            _dependencies.WalkDependencies();
         }
     }
 }
