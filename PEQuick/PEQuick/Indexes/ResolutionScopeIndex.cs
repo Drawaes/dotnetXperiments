@@ -33,5 +33,10 @@ namespace PEQuick.Indexes
                     return;
             }
         }
+
+        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

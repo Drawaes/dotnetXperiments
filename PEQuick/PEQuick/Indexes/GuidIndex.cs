@@ -7,17 +7,17 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class StringIndex : SimpleIndex
+    public class GuidIndex : SimpleIndex
     {
-        private string _value;
+        private Guid _value;
 
         public int Index => (int)_rawIndex;
-        public string Value => _value;
-        public override uint TableOffset => (uint)TableFlag.Strings << 24;
+        public Guid Value => _value;
+        public override uint TableOffset => (uint)TableFlag.Guid << 24;
 
         internal override void Resolve(MetaDataTables tables)
         {
-            _value = tables.Strings.GetString(_rawIndex);
-        }       
+            _value = tables.Guids.GetGuid(_rawIndex);
+        }
     }
 }

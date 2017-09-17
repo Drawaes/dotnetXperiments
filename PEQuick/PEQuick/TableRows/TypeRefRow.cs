@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
@@ -33,6 +34,11 @@ namespace PEQuick.TableRows
         public override void GetDependencies(DependencyGather tagQueue)
         {
             tagQueue.SeedTag(_resolutionScope.Row);
+        }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
         }
     }
 }

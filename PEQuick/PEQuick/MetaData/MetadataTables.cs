@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.MetaData;
 using PEQuick.TableRows;
 
@@ -13,6 +14,7 @@ namespace PEQuick.MetaData
         private StringsSection _strings;
         private BlobSection _blobs;
         private UserStringSection _userStrings;
+        private GuidSection _guids;
         private byte _majorVersion;
         private byte _minorVersion;
         private Dictionary<TableFlag, ITable> _tables = new Dictionary<TableFlag, ITable>();
@@ -20,6 +22,7 @@ namespace PEQuick.MetaData
         private PEFile _peFile;
         private Dictionary<(uint AssemblyTag, uint Tag), Row> _assemblyIndexedRows;
         private Dictionary<uint, Row> _indexedRows;
+        private ulong _sortedTables;
 
         private void LoadEmptyCollections()
         {
@@ -72,7 +75,9 @@ namespace PEQuick.MetaData
             _strings = peFile.Strings;
             _blobs = peFile.Blobs;
             _userStrings = peFile.UserStrings;
+            _guids = peFile.Guids;
             _peFile = peFile;
+
             var reader = ReadHeaderAndSizes(inputs);
             LoadEmptyCollections();
 
@@ -107,6 +112,7 @@ namespace PEQuick.MetaData
 
         public Dictionary<TableFlag, int> Sizes => _sizes;
         public BlobSection Blobs => _blobs;
+        public GuidSection Guids => _guids;
         public StringsSection Strings => _strings;
         public Dictionary<(uint AssemblyTag, uint Tag), Row> AssemblyIndexedRows => _assemblyIndexedRows;
 
@@ -133,11 +139,20 @@ namespace PEQuick.MetaData
 
         public ITable GetTable(TableFlag t)
         {
-            if(t == TableFlag.UserString)
+            if (t == TableFlag.UserString)
             {
                 return _userStrings;
             }
             return _tables[t];
+        }
+
+        public int GetTableSize(TableFlag t)
+        {
+            if (_tables.TryGetValue(t, out ITable tab))
+            {
+                return tab.Count;
+            }
+            return 0;
         }
 
         private MetaDataReader ReadHeaderAndSizes(Span<byte> inputs)
@@ -148,7 +163,7 @@ namespace PEQuick.MetaData
             inputs = inputs.Read(out HeapOffsetSizeFlags offsetSizes);
             inputs = inputs.Slice(1);
             inputs = inputs.Read(out ulong enabledTables);
-            inputs = inputs.Read(out ulong _sortedTables);
+            inputs = inputs.Read(out _sortedTables);
 
             for (var i = 0; i < 64; i++)
             {
@@ -161,6 +176,63 @@ namespace PEQuick.MetaData
             }
 
             return new MetaDataReader(inputs, offsetSizes, _sizes);
+        }
+
+        public Span<byte> Write(Dictionary<uint, uint> remapper, int stringSize, int blobSize)
+        {
+            var buffer = new byte[1024 * 1024 * 4];
+            var span = new Span<byte>(buffer);
+            span = span.Write(MagicNumbers.MetaData);
+            span = span.Write(_majorVersion);
+            span = span.Write(_minorVersion);
+            span = span.Write<int>(0);
+
+            HeapOffsetSizeFlags offFlags = 0;
+            if (stringSize > ushort.MaxValue)
+            {
+                offFlags |= HeapOffsetSizeFlags.String;
+            }
+            if (blobSize > ushort.MaxValue)
+            {
+                offFlags |= HeapOffsetSizeFlags.Blob;
+            }
+            span = span.Write(offFlags);
+            span[0] = 0;
+            span = span.Slice(1);
+
+            ulong flags = 0;
+            for (var i = 0; i < 64; i++)
+            {
+                var currentFlag = (TableFlag)(i);
+                if (_tables.TryGetValue(currentFlag, out ITable value) && value.Count > 0)
+                {
+                    flags = flags | (1ul << i);
+                }
+            }
+            span = span.Write(flags);
+            span = span.Write(_sortedTables);
+
+            for (var i = 0; i < 64; i++)
+            {
+                var currentFlag = (TableFlag)i;
+                if (_tables.TryGetValue(currentFlag, out ITable tab) && tab.Count > 0)
+                {
+                    span = span.Write(tab.Count);
+                }
+            }
+
+            var writer = new MetaDataWriter(span, offFlags, this, remapper);
+
+            for (var i = 0; i < 64; i++)
+            {
+                var currentFlag = (TableFlag)i;
+                if (!_tables.TryGetValue(currentFlag, out ITable tab))
+                {
+                    continue;
+                }
+                tab.Write(ref writer, remapper);
+            }
+            throw new NotImplementedException();
         }
     }
 }

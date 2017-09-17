@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -24,6 +25,11 @@ namespace PEQuick.TableRows
         {
             _nestedClass = reader.ReadIndex<TypeDefIndex>();
             _enclosingClass = reader.ReadIndex<TypeDefIndex>();
+        }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
         }
     }
 }

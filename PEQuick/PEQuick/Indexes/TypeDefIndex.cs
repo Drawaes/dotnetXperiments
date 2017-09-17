@@ -17,5 +17,10 @@ namespace PEQuick.Indexes
         {
             _row = tables.GetCollection<TypeDefRow>()[Index];
         }
+
+        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

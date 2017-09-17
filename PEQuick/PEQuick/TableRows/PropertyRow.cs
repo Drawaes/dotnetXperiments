@@ -30,5 +30,10 @@ namespace PEQuick.TableRows
             _nameIndex = reader.ReadIndex<StringIndex>();
             _type = reader.ReadIndex<BlobIndex>();
         }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

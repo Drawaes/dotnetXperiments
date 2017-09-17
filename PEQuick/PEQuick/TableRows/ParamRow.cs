@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using PEQuick.Flags;
 using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
@@ -33,6 +35,11 @@ namespace PEQuick.TableRows
         {
             tagQueue.SeedTag(Parent);
             //Todo where is the "type" that the parm is?
+        }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
         }
     }
 }

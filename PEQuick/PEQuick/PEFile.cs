@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using PEQuick.MetaData;
+using PEQuick.PE;
 using PEQuick.TableRows;
 
 namespace PEQuick
@@ -22,7 +23,7 @@ namespace PEQuick
         private MetaDataTables _metaDataTables;
         private StringsSection _strings;
         private UserStringSection _userStrings;
-        private GuidSection _guidSection;
+        private GuidSection _guids;
         private BlobSection _blobs;
         
         internal unsafe PEFile(byte[] file)
@@ -58,7 +59,7 @@ namespace PEQuick
             LoadMetaDataHeader();
         }
 
-        internal GuidSection Guids => _guidSection;
+        internal GuidSection Guids => _guids;
         internal StringsSection Strings => _strings;
         internal BlobSection Blobs => _blobs;
         internal UserStringSection UserStrings => _userStrings;
@@ -89,7 +90,7 @@ namespace PEQuick
                         _strings = new StringsSection(section.Slice((int)sh.Offset, (int)sh.Size));
                         break;
                     case "#GUID":
-                        _guidSection = new GuidSection(section.Slice((int)sh.Offset, (int)sh.Size));
+                        _guids = new GuidSection(section.Slice((int)sh.Offset, (int)sh.Size));
                         break;
                     case "#Blob":
                         _blobs = new BlobSection(section.Slice((int)sh.Offset, (int)sh.Size));

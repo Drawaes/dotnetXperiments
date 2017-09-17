@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -11,9 +12,9 @@ namespace PEQuick.TableRows
     {
         private ushort _generation;
         private StringIndex _nameIndex;
-        private uint _mvid;
-        private uint _encId;
-        private uint _encBaseId;
+        private GuidIndex _mvid;
+        private GuidIndex _encId;
+        private GuidIndex _encBaseId;
         private AssemblyRow _parent;
 
         public override TableFlag Table => TableFlag.Module;
@@ -29,9 +30,18 @@ namespace PEQuick.TableRows
         {
             _generation = reader.Read<ushort>();
             _nameIndex = reader.ReadIndex<StringIndex>();
-            _mvid = reader.ReadGuidOffset();
-            _encId = reader.ReadGuidOffset();
-            _encBaseId = reader.ReadGuidOffset();
+            _mvid = reader.ReadIndex<GuidIndex>();
+            _encId = reader.ReadIndex<GuidIndex>();
+            _encBaseId = reader.ReadIndex<GuidIndex>();
+        }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            writer.Write(_generation);
+            writer.WriteIndex(_nameIndex);
+            writer.WriteIndex(_mvid);
+            writer.WriteIndex(_encId);
+            writer.WriteIndex(_encBaseId);
         }
     }
 }

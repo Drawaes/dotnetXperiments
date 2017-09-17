@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.Importer;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
@@ -36,6 +37,11 @@ namespace PEQuick.TableRows
         {
             tagQueue.SeedTag(_class.Row);
             //TODO parse signature;
+        }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
         }
     }
 }

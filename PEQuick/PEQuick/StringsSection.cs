@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.Indexes;
 
 namespace PEQuick
@@ -42,6 +43,29 @@ namespace PEQuick
                     throw new NotImplementedException();
                 }
             }
+        }
+
+        internal Span<byte> WriteSection(Dictionary<uint, uint> remapper)
+        {
+            var tag = ((uint)TableFlag.Strings << 24);
+            var maxSize = _strings.Sum(s => s.Value.Length + 4) + 1;
+            var buffer = new byte[maxSize];
+            var span = new Span<byte>(buffer);
+            span[0] = 0;
+            span = span.Slice(1);
+            
+            foreach(var kv in _strings)
+            {
+                var index = (uint)(buffer.Length - span.Length) | tag;
+                span = span.WriteEncodedInt((uint)kv.Value.Length + 1);
+                var charSpan = new Span<char>(kv.Value.ToCharArray()).AsBytes();
+                System.Text.Encoders.Utf8.FromUtf16(charSpan, span, out int consumed, out int written);
+                span = span.Slice(written);
+                span[0] = 0;
+                span = span.Slice(1);
+                remapper.Add(kv.Key | tag, index);
+            }
+            return buffer.AsSpan().Slice(0, buffer.Length - span.Length);
         }
     }
 }

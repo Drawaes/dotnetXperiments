@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
@@ -18,6 +19,7 @@ namespace PEQuick.TableRows
         }
 
         public TableFlag TableFlag => _tableFlag;
+        public int Count => _contents.Count;
 
         public T this[int index]
         {
@@ -37,6 +39,14 @@ namespace PEQuick.TableRows
         }
 
         public Row GetRow(int index) => _contents[index - 1];
+
+        public void Write(ref MetaDataWriter writer, Dictionary<uint,uint> remapper)
+        {
+            foreach(var item in _contents)
+            {
+                item.WriteRow(ref writer, remapper);
+            }
+        }
 
         public T[] GetRange(int first, int end)
         {

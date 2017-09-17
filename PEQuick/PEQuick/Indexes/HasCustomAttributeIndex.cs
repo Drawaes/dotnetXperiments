@@ -13,6 +13,11 @@ namespace PEQuick.Indexes
 
         public Row Row => _row;
 
+        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
+        {
+            throw new NotImplementedException();
+        }
+
         internal override void Resolve(MetaDataTables tables)
         {
             var flag = _rawIndex & BitMask;

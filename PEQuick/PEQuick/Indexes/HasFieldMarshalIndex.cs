@@ -14,6 +14,12 @@ namespace PEQuick.Indexes
         {
             throw new NotImplementedException();
         }
+
+        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
+        {
+            throw new NotImplementedException();
+        }
+
         /*
          * HasFieldMarshall: 1 bit to encode tag Tag
 Field 0

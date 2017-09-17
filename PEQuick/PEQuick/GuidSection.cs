@@ -19,5 +19,10 @@ namespace PEQuick
                 _guids.Add(currentIndex, guid);
             }
         }
+
+        public Guid GetGuid(uint index)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -12,14 +12,22 @@ namespace PEQuick
         private long _stackCommitSize;
         private long _heapReserveSize;
         private long _heapCommitSize;
-        private uint _loaderFlags;
-        private uint _numberOfDataDir;
+       
+        public long StackReserveSize { get => _stackReserveSize; set => _stackReserveSize = value; }
+        public long StackCommitSize { get => _stackCommitSize; set => _stackCommitSize = value; }
+        public long HeapReserveSize { get => _heapReserveSize; set => _heapReserveSize = value; }
+        public long HeapCommitSize { get => _heapCommitSize; set => _heapCommitSize = value; }
 
-        public long StackReserveSize => _stackReserveSize;
-        public long StackCommitSize => _stackCommitSize;
-        public long HeapReserveSize => _heapReserveSize;
-        public long HeapCommitSize => _heapCommitSize;
-        public uint LoaderFlags => _loaderFlags;
-        public uint NumberOfRvaAndSizes => _numberOfDataDir;
+        internal static MemorySize64 CreateDefaults()
+        {
+            var mem = new MemorySize64()
+            {
+                StackReserveSize = 0x100000,
+                StackCommitSize = 0x1000,
+                HeapReserveSize = 0x100000,
+                HeapCommitSize = 0x1000,
+            };
+            return mem;
+        }
     }
 }

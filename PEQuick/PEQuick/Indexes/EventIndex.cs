@@ -12,6 +12,11 @@ namespace PEQuick.Indexes
 
         public int Index => checked((int)_rawIndex);
 
+        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
+        {
+            throw new NotImplementedException();
+        }
+
         internal override void Resolve(MetaDataTables tables)
         {
             _row = tables.GetCollection<EventRow>()[Index];

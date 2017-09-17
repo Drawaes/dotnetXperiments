@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using PEQuick.Flags;
 using PEQuick.Indexes;
 using PEQuick.MetaData;
 
@@ -38,6 +37,11 @@ namespace PEQuick.TableRows
             PublicKey = reader.ReadIndex<BlobIndex>();
             Name = reader.ReadIndex<StringIndex>();
             CultureIndex = reader.ReadIndex<StringIndex>();
+        }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

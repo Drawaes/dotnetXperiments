@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PEQuick.MetaData
+namespace PEQuick.Flags
 {
     [Flags]
     public enum TableFlag : byte
@@ -62,5 +62,8 @@ namespace PEQuick.MetaData
         StateMachineMethod = 0x36,
         CustomDebugInformation = 0x37,
         UserString = 0x70,
+        Guid = 0x71,
+        Blob = 0x72,
+        Strings = 0x73,
     }
 }

@@ -22,7 +22,7 @@ namespace PEQuick
             where T : struct
         {
             var size = Unsafe.SizeOf<T>() * values.Length;
-            if(input.Length < size)
+            if (input.Length < size)
             {
                 throw new InvalidOperationException();
             }
@@ -32,19 +32,43 @@ namespace PEQuick
             return input;
         }
 
+        const byte oneByteFilter = 0b1000_0000;
+        const byte twoByteFilter = 0b0100_0000;
+        const byte oneByteLimit = oneByteFilter;
+        const ushort twoByteLimit = twoByteFilter << 8;
+        const byte fourByteFilter = oneByteFilter | twoByteFilter;
+
+        public static Span<byte> WriteEncodedInt(this Span<byte> input, uint value)
+        {
+            if (value < oneByteLimit)
+            {
+                input[0] = (byte)value;
+                return input.Slice(1);
+            }
+
+            if (value < twoByteLimit)
+            {
+                input[0] = (byte)((value >> 8) | oneByteFilter);
+                input[1] = (byte)(value & 0xff);
+                return input.Slice(2);
+            }
+
+            input[0] = (byte)((value >> 24) | fourByteFilter);
+            input[1] = (byte)((value >> 16) | 0xff);
+            input[2] = (byte)((value >> 8) | 0xff);
+            input[3] = (byte)(value | 0xff);
+            return input.Slice(4);
+        }
+
         public static Span<byte> ReadEncodedInt(this Span<byte> input, out uint output)
         {
-            const byte oneByteFilter = 0b1000_0000;
-            const byte twoByteFilter = 0b0100_0000;
-            const byte fourByteFilter = oneByteFilter | twoByteFilter;
-
             if ((input[0] & oneByteFilter) == 0)
             {
                 output = input[0];
                 return input.Slice(1);
             }
 
-            if((input[0] & twoByteFilter) ==0)
+            if ((input[0] & twoByteFilter) == 0)
             {
                 output = (uint)(((input[0] & ~oneByteFilter) << 8) | input[1]);
                 return input.Slice(2);
@@ -62,7 +86,7 @@ namespace PEQuick
         {
             input = input.Read(out uint size);
             var i = input.IndexOf(0);
-            var stringSpan = input.Slice(0,Math.Min(i, (int)size));
+            var stringSpan = input.Slice(0, Math.Min(i, (int)size));
             value = stringSpan.ReadNullString();
             return input.Slice((int)size);
         }
@@ -79,7 +103,7 @@ namespace PEQuick
             where T : struct
         {
             var length = Unsafe.SizeOf<T>();
-            if(input.Length < length)
+            if (input.Length < length)
             {
                 throw new NotImplementedException();
             }
@@ -127,7 +151,7 @@ namespace PEQuick
         public unsafe static Span<byte> ReadAlignedString(this Span<byte> input, out string value)
         {
             var nullTerminator = input.IndexOf(0);
-            fixed(void* ptr = &input.DangerousGetPinnableReference())
+            fixed (void* ptr = &input.DangerousGetPinnableReference())
             {
                 value = Marshal.PtrToStringUTF8((IntPtr)ptr, nullTerminator);
             }

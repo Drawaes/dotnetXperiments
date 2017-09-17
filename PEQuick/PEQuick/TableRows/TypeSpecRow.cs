@@ -58,5 +58,10 @@ namespace PEQuick.TableRows
             tagQueue.SeedTag(_parentRow.Row);
             //TODO check for arrays etc
         }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

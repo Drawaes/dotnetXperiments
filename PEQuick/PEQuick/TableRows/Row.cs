@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using PEQuick.Flags;
 using PEQuick.Importer;
 using PEQuick.MetaData;
 
@@ -28,5 +28,7 @@ namespace PEQuick.TableRows
         {
             _index = newIndex;
         }
+
+        public abstract void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping);
     }
 }

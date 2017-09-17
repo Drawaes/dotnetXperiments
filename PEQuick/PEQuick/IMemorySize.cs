@@ -6,11 +6,9 @@ namespace PEQuick
 {
     public interface IMemorySize
     {
-        long StackReserveSize { get; }
-        long StackCommitSize { get; }
-        long HeapReserveSize { get; }
-        long HeapCommitSize { get; }
-        uint LoaderFlags { get; }
-        uint NumberOfRvaAndSizes { get; }
+        long StackReserveSize { get; set; }
+        long StackCommitSize { get; set; }
+        long HeapReserveSize { get; set; }
+        long HeapCommitSize { get; set; }
     }
 }

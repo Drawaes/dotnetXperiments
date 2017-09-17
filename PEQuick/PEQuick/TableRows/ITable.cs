@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Flags;
 using PEQuick.MetaData;
 
 namespace PEQuick.TableRows
@@ -12,5 +13,7 @@ namespace PEQuick.TableRows
         void Resolve(MetaDataTables metaDataTables);
         Row GetRow(int index);
         void AddRow(Row newRow);
+        int Count { get; }
+        void Write(ref MetaDataWriter writer, Dictionary<uint, uint> remapper);
     }
 }

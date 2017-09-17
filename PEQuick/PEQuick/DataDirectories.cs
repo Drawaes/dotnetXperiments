@@ -8,6 +8,8 @@ namespace PEQuick
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct DataDirectories
     {
+        public uint LoaderFlags;
+        public uint NumberOfDataDirs;
         public ImageDataDirectory ExportTable;
         public ImageDataDirectory ImportTable;
         public ImageDataDirectory ResourceTable;

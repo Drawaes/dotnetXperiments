@@ -64,5 +64,10 @@ namespace PEQuick.TableRows
             }
             //TODO parse body
         }
+
+        public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

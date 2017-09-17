@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using PEQuick.Flags;
 
-namespace PEQuick
+namespace PEQuick.PE
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct PEOptions
@@ -17,9 +17,9 @@ namespace PEQuick
         public uint UninitializedDataSize;
         public uint EntryPointRVA;
         public uint BaseOfCode;
-        private ulong _imageBase;
+        public ulong ImageBase;
         public uint SectionAlignment;
-        public uint FileAlignement;
+        public uint FileAlignment;
         public ushort OSMajor;
         public ushort OSMinor;
         public ushort UserMajor;
@@ -31,9 +31,8 @@ namespace PEQuick
         public uint HeaderSize;
         public uint FileChecksum;
         public ushort SubSystem;
-        public ushort DllFlags;
+        public DllFlags DllFlags;
 
         public bool Is64 => Bitness == PEFormatType.PE32Plus;
-        public ulong ImageBase => Is64 ? _imageBase : 0x00000000ffffffff & _imageBase;
     }
 }
