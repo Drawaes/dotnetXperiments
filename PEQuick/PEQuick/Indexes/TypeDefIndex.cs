@@ -6,21 +6,16 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class TypeDefIndex : Index
+    public class TypeDefIndex : SingleIndex
     {
         private TypeDefRow _row;
 
         public int Index => checked((int)_rawIndex);
-        public TypeDefRow Row => _row;
+        public override Row Row => _row;
 
         internal override void Resolve(MetaDataTables tables)
         {
             _row = tables.GetCollection<TypeDefRow>()[Index];
-        }
-
-        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
-        {
-            throw new NotImplementedException();
         }
     }
 }

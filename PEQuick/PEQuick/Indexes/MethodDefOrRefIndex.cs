@@ -6,17 +6,18 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class MethodDefOrRefIndex : Index
+    public class MethodDefOrRefIndex : MultiIndex
     {
         private Row _row;
-        private const uint BitMask = 0b0000_0001;
-
-        public Row Row => _row;
+        
+        public override Row Row => _row;
+        protected override byte BitMask => 0b0000_0001;
+        protected override byte BitShift => 1;
 
         internal override void Resolve(MetaDataTables tables)
         {
             var flag = _rawIndex & BitMask;
-            var index = (int)( _rawIndex >> 1);
+            var index = (int)( _rawIndex >> BitShift);
             switch (flag)
             {
                 case 0:
@@ -26,11 +27,6 @@ namespace PEQuick.Indexes
                     _row = tables.GetCollection<MemberRefRow>()[index];
                     break;
             }
-        }
-
-        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
-        {
-            throw new NotImplementedException();
         }
     }
 }

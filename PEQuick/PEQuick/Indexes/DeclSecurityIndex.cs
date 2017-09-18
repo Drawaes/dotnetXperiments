@@ -6,14 +6,10 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class DeclSecurity : Index
+    public class DeclSecurityIndex : SingleIndex
     {
-
-        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
-        {
-            throw new NotImplementedException();
-        }
-
+        public override Row Row => throw new NotImplementedException();
+        
         internal override void Resolve(MetaDataTables tables)
         {
             throw new NotImplementedException();

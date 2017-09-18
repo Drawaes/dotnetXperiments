@@ -42,7 +42,9 @@ namespace PEQuick.TableRows
 
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
-            throw new NotImplementedException();
+            writer.Write(_flags);
+            writer.WriteIndex(_nameIndex);
+            writer.WriteIndex(_signature);
         }
     }
 }

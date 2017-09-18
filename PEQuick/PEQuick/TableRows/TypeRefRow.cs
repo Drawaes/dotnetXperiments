@@ -23,6 +23,11 @@ namespace PEQuick.TableRows
             _nameIndex.Resolve(tables);
             _namespaceIndex.Resolve(tables);
         }
+        
+        public override void GetDependencies(DependencyGather tagQueue)
+        {
+            tagQueue.SeedTag(_resolutionScope.Row);
+        }
 
         public override void Read(ref MetaDataReader reader)
         {
@@ -30,15 +35,12 @@ namespace PEQuick.TableRows
             _nameIndex = reader.ReadIndex<StringIndex>();
             _namespaceIndex = reader.ReadIndex<StringIndex>();
         }
-
-        public override void GetDependencies(DependencyGather tagQueue)
-        {
-            tagQueue.SeedTag(_resolutionScope.Row);
-        }
-
+        
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
-            throw new NotImplementedException();
+            writer.WriteIndex(_resolutionScope);
+            writer.WriteIndex(_nameIndex);
+            writer.WriteIndex(_namespaceIndex);
         }
     }
 }

@@ -6,22 +6,18 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class HasCustomAttributeIndex : Index
+    public class HasCustomAttributeIndex : MultiIndex
     {
         private Row _row;
-        private const uint BitMask = 0b0001_1111;
 
-        public Row Row => _row;
-
-        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
-        {
-            throw new NotImplementedException();
-        }
-
+        protected override byte BitMask => 0b0001_1111;
+        protected override byte BitShift => 5;
+        public override Row Row => _row;
+        
         internal override void Resolve(MetaDataTables tables)
         {
             var flag = _rawIndex & BitMask;
-            var index = (int)(_rawIndex >> 5);
+            var index = (int)(_rawIndex >> BitShift);
             switch (flag)
             {
                 case 0:
@@ -85,7 +81,7 @@ namespace PEQuick.Indexes
                     break;
                 case 20:
                     //Generic Param Constraint
-                    break;
+                    throw new NotImplementedException();
                 case 21:
                     _row = tables.GetCollection<MethodSpecRow>()[index];
                     break;

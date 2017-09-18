@@ -6,16 +6,13 @@ using PEQuick.TableRows;
 
 namespace PEQuick.Indexes
 {
-    public class HasFieldMarshalIndex : Index
+    public class HasFieldMarshalIndex : MultiIndex
     {
-        public Row Row => throw new NotImplementedException();
+        public override Row Row => throw new NotImplementedException();
+        protected override byte BitMask => throw new NotImplementedException();
+        protected override byte BitShift => throw new NotImplementedException();
 
         internal override void Resolve(MetaDataTables tables)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal override Span<byte> Write(Span<byte> input, Dictionary<uint, uint> remapper, bool largeFormat)
         {
             throw new NotImplementedException();
         }

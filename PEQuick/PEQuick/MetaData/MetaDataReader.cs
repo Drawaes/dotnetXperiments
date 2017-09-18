@@ -59,7 +59,7 @@ namespace PEQuick.MetaData
         
         public T Read<T>() where T : struct
         {
-            Debug.Assert(!typeof(Index).IsAssignableFrom(typeof(T)));
+            Debug.Assert(!typeof(SingleIndex).IsAssignableFrom(typeof(T)));
 
             _input = _input.Read(out T value);
             return value;
