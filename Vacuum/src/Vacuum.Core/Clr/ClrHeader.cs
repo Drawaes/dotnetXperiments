@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using Vacuum.Core.PE;
 
-namespace PEQuick
+namespace Vacuum.Core.Clr
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct CliHeader
+    public struct ClrHeader
     {
         public uint CB;
         public ushort MajorRuntimeVersion;

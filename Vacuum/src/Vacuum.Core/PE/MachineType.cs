@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PEQuick
+namespace Vacuum.Core.PE
 {
     public enum MachineType : ushort
     {
