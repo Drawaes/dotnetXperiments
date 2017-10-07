@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>TestClass</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.9, OS=Windows 10.0.16296
+Processor=Intel Xeon CPU E3-1505M v5 2.80GHz, ProcessorCount=8
+Frequency=2742185 Hz, Resolution=364.6727 ns, Timer=TSC
+.NET Core SDK=2.1.0-preview1-007214
+  [Host]     : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT  [AttachedDebugger]
+  DefaultJob : .NET Core 2.0.0 (Framework 4.6.00001.0), 64bit RyuJIT
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Gen 0</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>Closure</td><td>608.6 us</td><td>8.726 us</td><td>8.163 us</td><td>208.9844</td><td>859.38 KB</td>
+</tr><tr><td>NotClosure</td><td>274.7 us</td><td>2.162 us</td><td>1.806 us</td><td>57.1289</td><td>234.38 KB</td>
+</tr></tbody></table>
+</body>
+</html>

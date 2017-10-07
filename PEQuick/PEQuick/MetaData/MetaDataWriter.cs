@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using PEQuick.Indexes;
+using PEQuick.Output;
 
 namespace PEQuick.MetaData
 {
@@ -11,15 +12,19 @@ namespace PEQuick.MetaData
         private Dictionary<Type, bool> _useLargeIndexes;
         private int _initialLength;
         private Dictionary<uint, uint> _remapper;
+        private SectionDump _dataSection;
 
-        public MetaDataWriter(Span<byte> input, HeapOffsetSizeFlags heapSizes, MetaDataTables tables, Dictionary<uint, uint> remapper)
+        public MetaDataWriter(SectionDump dataSection, Span<byte> input, HeapOffsetSizeFlags heapSizes, MetaDataTables tables, Dictionary<uint, uint> remapper)
         {
+            _dataSection = dataSection;
             _initialLength = input.Length;
             _input = input;
             _remapper = remapper;
 
             _useLargeIndexes = TagSizes.GetLargeSizes((f) => tables.GetTableSize(f), heapSizes);
         }
+
+        public int Length => _input.Length;
 
         public void WriteIndex<T>(T index)
             where T : Index
@@ -32,5 +37,7 @@ namespace PEQuick.MetaData
         {
             _input = _input.Write(value);
         }
+
+        public int WriteRVABlob(Span<byte> blob) => _dataSection.WriteData(blob);
     }
 }

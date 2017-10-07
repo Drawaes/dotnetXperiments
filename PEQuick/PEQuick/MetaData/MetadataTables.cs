@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using PEQuick.Flags;
 using PEQuick.MetaData;
+using PEQuick.Output;
 using PEQuick.TableRows;
 
 namespace PEQuick.MetaData
@@ -157,13 +158,6 @@ namespace PEQuick.MetaData
 
         private MetaDataReader ReadHeaderAndSizes(Span<byte> inputs)
         {
-            inputs = inputs.Slice(4);
-            inputs = inputs.Read(out _majorVersion);
-            inputs = inputs.Read(out _minorVersion);
-            inputs = inputs.Read(out HeapOffsetSizeFlags offsetSizes);
-            inputs = inputs.Slice(1);
-            inputs = inputs.Read(out ulong enabledTables);
-            inputs = inputs.Read(out _sortedTables);
 
             for (var i = 0; i < 64; i++)
             {
@@ -178,15 +172,14 @@ namespace PEQuick.MetaData
             return new MetaDataReader(inputs, offsetSizes, _sizes);
         }
 
-        public Span<byte> Write(Dictionary<uint, uint> remapper, int stringSize, int blobSize)
+        public Span<byte> Write(SectionDump dataSection, Dictionary<uint, uint> remapper, int stringSize, int blobSize)
         {
             var buffer = new byte[1024 * 1024 * 4];
             var span = new Span<byte>(buffer);
-            span = span.Write(MagicNumbers.MetaData);
+            span = span.Write((uint)0);
             span = span.Write(_majorVersion);
             span = span.Write(_minorVersion);
-            span = span.Write<int>(0);
-
+            
             HeapOffsetSizeFlags offFlags = 0;
             if (stringSize > ushort.MaxValue)
             {
@@ -221,7 +214,7 @@ namespace PEQuick.MetaData
                 }
             }
 
-            var writer = new MetaDataWriter(span, offFlags, this, remapper);
+            var writer = new MetaDataWriter(dataSection, span, offFlags, this, remapper);
 
             for (var i = 0; i < 64; i++)
             {
@@ -232,7 +225,8 @@ namespace PEQuick.MetaData
                 }
                 tab.Write(ref writer, remapper);
             }
-            throw new NotImplementedException();
+            var totalLength = buffer.Length - writer.Length;
+            return buffer.AsSpan().Slice(0, totalLength);
         }
     }
 }

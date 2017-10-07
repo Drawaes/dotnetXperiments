@@ -16,7 +16,6 @@ namespace Vacuum.Core.Clr
 
         public ClrDataHeader(ref ClrReader reader)
         {
-
             reader.CheckMagicNumber(Utils.MagicNumbers.ClrMetaDataMagicNumber);
             MajorVersion = reader.Read<ushort>();
             MinorVersion = reader.Read<ushort>();

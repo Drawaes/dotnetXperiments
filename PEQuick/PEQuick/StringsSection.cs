@@ -20,8 +20,7 @@ namespace PEQuick
         public string GetString(uint stringIndex)
         {
             var span = _section.AsSpan().Slice((int)stringIndex);
-            var nextNull = span.IndexOf(0);
-            var s = span.Slice(0,nextNull).ReadNullString();
+            var s = span.ReadNullTerminatedString();
             if(_strings.TryGetValue(stringIndex, out string oldValue))
             {
                 if(oldValue != s)

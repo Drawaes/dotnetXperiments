@@ -8,18 +8,7 @@ namespace PEQuick.TableRows
 {
     public class AssemblyRefRow : Row
     {
-        private ushort _majorVersion;
-        private ushort _minorVersion;
-        private ushort _buildNumber;
-        private ushort _revisionNumber;
-        private uint _flags;
-        private BlobIndex _publicKeyOrToken;
-        private StringIndex _cultureIndex;
-        private BlobIndex _hashValue;
         
-        public StringIndex Name { get; set; }
-        public override TableFlag Table => TableFlag.AssemblyRef;
-
         public override void Resolve(MetaDataTables tables)
         {
             _publicKeyOrToken.Resolve(tables);
@@ -27,20 +16,7 @@ namespace PEQuick.TableRows
             _cultureIndex.Resolve(tables);
             _hashValue.Resolve(tables);
         }
-
-        public override void Read(ref MetaDataReader reader)
-        {
-            _majorVersion = reader.Read<ushort>();
-            _minorVersion = reader.Read<ushort>();
-            _buildNumber = reader.Read<ushort>();
-            _revisionNumber = reader.Read<ushort>();
-            _flags = reader.Read<uint>();
-            _publicKeyOrToken = reader.ReadIndex<BlobIndex>();
-            Name = reader.ReadIndex<StringIndex>();
-            _cultureIndex = reader.ReadIndex<StringIndex>();
-            _hashValue = reader.ReadIndex<BlobIndex>();
-        }
-
+        
         public override uint AssemblyTag => Tag;
 
         public override void GetDependencies(DependencyGather tagQueue)
@@ -50,7 +26,15 @@ namespace PEQuick.TableRows
 
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
-            throw new System.NotImplementedException();
+            writer.Write(_majorVersion);
+            writer.Write(_minorVersion);
+            writer.Write(_buildNumber);
+            writer.Write(_revisionNumber);
+            writer.Write(_flags);
+            writer.WriteIndex(_publicKeyOrToken);
+            writer.WriteIndex(Name);
+            writer.WriteIndex(_cultureIndex);
+            writer.WriteIndex(_hashValue);
         }
     }
 }

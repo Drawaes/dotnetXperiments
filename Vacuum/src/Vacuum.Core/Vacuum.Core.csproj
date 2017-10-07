@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Clr\Rows\" />
     <Folder Include="Writing\" />
   </ItemGroup>
 

@@ -224,45 +224,7 @@ namespace Mono.Cecil.PE {
 
 		void WriteOptionalHeaders ()
 		{
-			WriteUInt16 ((ushort) (!pe64 ? 0x10b : 0x20b));	// Magic
-			WriteByte (8);	// LMajor
-			WriteByte (0);	// LMinor
-			WriteUInt32 (text.SizeOfRawData);	// CodeSize
-			WriteUInt32 ((reloc != null ? reloc.SizeOfRawData : 0)
-				+ (rsrc != null ? rsrc.SizeOfRawData : 0));	// InitializedDataSize
-			WriteUInt32 (0);	// UninitializedDataSize
-
-			var startub_stub = text_map.GetRange (TextSegment.StartupStub);
-			WriteUInt32 (startub_stub.Length > 0 ? startub_stub.Start : 0);  // EntryPointRVA
-			WriteUInt32 (text_rva);	// BaseOfCode
-
-			if (!pe64) {
-				WriteUInt32 (0);	// BaseOfData
-				WriteUInt32 ((uint) image_base);	// ImageBase
-			} else {
-				WriteUInt64 (image_base);	// ImageBase
-			}
-
-			WriteUInt32 (section_alignment);	// SectionAlignment
-			WriteUInt32 (file_alignment);		// FileAlignment
-
-			WriteUInt16 (4);	// OSMajor
-			WriteUInt16 (0);	// OSMinor
-			WriteUInt16 (0);	// UserMajor
-			WriteUInt16 (0);	// UserMinor
-			WriteUInt16 (4);	// SubSysMajor
-			WriteUInt16 (0);	// SubSysMinor
-			WriteUInt32 (0);	// Reserved
-
-			var last_section = LastSection();
-			WriteUInt32 (last_section.VirtualAddress + Align (last_section.VirtualSize, section_alignment));	// ImageSize
-			WriteUInt32 (text.PointerToRawData);	// HeaderSize
-
-			WriteUInt32 (0);	// Checksum
-			WriteUInt16 (GetSubSystem ());	// SubSystem
-			WriteUInt16 ((ushort) module.Characteristics);	// DLLFlags
-
-			const ulong stack_reserve = 0x100000;
+		    const ulong stack_reserve = 0x100000;
 			const ulong stack_commit = 0x1000;
 			const ulong heap_reserve = 0x100000;
 			const ulong heap_commit = 0x1000;

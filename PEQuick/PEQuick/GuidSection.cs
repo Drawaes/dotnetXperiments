@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using PEQuick.Flags;
 
 namespace PEQuick
 {
@@ -23,6 +24,24 @@ namespace PEQuick
         public Guid GetGuid(uint index)
         {
             throw new NotImplementedException();
+        }
+
+        internal Span<byte> WriteSection(Dictionary<uint, uint> remapper)
+        {
+            var tag = ((uint)TableFlag.Guid << 24);
+            var maxSize = _guids.Values.Count * 16 + 1;
+            var buffer = new byte[maxSize];
+            var span = new Span<byte>(buffer);
+            span[0] = 0;
+            span = span.Slice(1);
+
+            foreach (var kv in _guids)
+            {
+                var index = (uint)(buffer.Length - span.Length) | tag;
+                span = span.Write(kv.Value);
+                remapper.Add((uint)kv.Key | tag, index);
+            }
+            return buffer.AsSpan().Slice(0, buffer.Length - span.Length);
         }
     }
 }

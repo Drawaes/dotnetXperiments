@@ -32,11 +32,10 @@ namespace PEQuick
             return input;
         }
 
-        const byte oneByteFilter = 0b1000_0000;
-        const byte twoByteFilter = 0b0100_0000;
+        
         const byte oneByteLimit = oneByteFilter;
         const ushort twoByteLimit = twoByteFilter << 8;
-        const byte fourByteFilter = oneByteFilter | twoByteFilter;
+        
 
         public static Span<byte> WriteEncodedInt(this Span<byte> input, uint value)
         {
@@ -60,42 +59,46 @@ namespace PEQuick
             return input.Slice(4);
         }
 
-        public static Span<byte> ReadEncodedInt(this Span<byte> input, out uint output)
-        {
-            if ((input[0] & oneByteFilter) == 0)
-            {
-                output = input[0];
-                return input.Slice(1);
-            }
-
-            if ((input[0] & twoByteFilter) == 0)
-            {
-                output = (uint)(((input[0] & ~oneByteFilter) << 8) | input[1]);
-                return input.Slice(2);
-            }
-
-            output = (uint)(((input[0] & ~fourByteFilter) << 24)
-                | (input[1] << 16)
-                | (input[2] << 8)
-                | input[3]);
-
-            return input.Slice(4);
-        }
+        
 
         public static Span<byte> ReadLengthPrefixedString(this Span<byte> input, out string value)
         {
             input = input.Read(out uint size);
-            var i = input.IndexOf(0);
-            var stringSpan = input.Slice(0, Math.Min(i, (int)size));
-            value = stringSpan.ReadNullString();
+            value = input.ReadNullTerminatedString();
             return input.Slice((int)size);
         }
 
-        public unsafe static string ReadNullString(this Span<byte> input)
+        public unsafe static string ReadNullTerminatedString(this Span<byte> input)
         {
+            var length = Math.Min(input.Length, input.IndexOf(0));
             fixed (void* ptr = &input.DangerousGetPinnableReference())
             {
-                return Marshal.PtrToStringUTF8((IntPtr)ptr, input.Length);
+                return Marshal.PtrToStringUTF8((IntPtr)ptr, length);
+            }
+        }
+
+        public static Span<byte> WriteLengthPrefixedString(this Span<byte> output, string value)
+        {
+            var length = value.Length + 1;
+            output = output.Write((uint)length);
+            output = output.WriteNullTerminatedString(value);
+            return output;
+        }
+
+        public unsafe static Span<byte> WriteNullTerminatedString(this Span<byte> output, string value)
+        {
+            var length = value.Length + 1;
+            if (length > output.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "Error not enough space to write");
+            }
+            fixed (char* c = value)
+            fixed (byte* o = &output.DangerousGetPinnableReference())
+            {
+                var amountWritten = Encoding.UTF8.GetBytes(c, value.Length, o, output.Length);
+                output = output.Slice(amountWritten);
+                output[0] = 0;
+                return output.Slice(1);
             }
         }
 
@@ -112,18 +115,6 @@ namespace PEQuick
                 Unsafe.Write(ptr, value);
             }
             return input.Slice(length);
-        }
-
-        public unsafe static Span<byte> CheckForMagicValue<T>(this Span<byte> span, T magicNumber) where T : struct
-        {
-            var val = magicNumber;
-            var size = Unsafe.SizeOf<T>();
-            var tempSpan = new Span<byte>(Unsafe.AsPointer(ref val), size);
-            if (!span.Slice(0, size).SequenceEqual(tempSpan))
-            {
-                throw new InvalidOperationException();
-            }
-            return span.Slice(size);
         }
 
         public static Span<byte> ReadStream(this Span<byte> input, out StreamHeader streamHeader)
@@ -156,8 +147,20 @@ namespace PEQuick
                 value = Marshal.PtrToStringUTF8((IntPtr)ptr, nullTerminator);
             }
             // align to 4 byte boundary
-            nullTerminator = (nullTerminator + 4) & ~0x03;
+            nullTerminator = (int)Utils.Align((uint)nullTerminator + 1, 4);
             return input.Slice(nullTerminator);
+        }
+
+        public unsafe static Span<byte> WriteAlignedString(this Span<byte> output, string value)
+        {
+            var sliceLength = (uint)value.Length + 1;
+            sliceLength = Utils.Align(sliceLength, 4);
+            output = output.WriteNullTerminatedString(value);
+            for(var i = 0; i < sliceLength - (value.Length + 1);i++)
+            {
+                output[i] = 0;
+            }
+            return output.Slice((int)sliceLength - (value.Length + 1));
         }
 
         public static int BitCount(ulong value)

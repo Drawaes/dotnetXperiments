@@ -10,11 +10,6 @@ namespace PEQuick.TableRows
 {
     public class MemberRefRow : Row
     {
-        private MemberRefParentIndex _class;
-        private StringIndex _nameIndex;
-        private BlobIndex _signature;
-
-        public override TableFlag Table => TableFlag.MemberRef;
         public override uint AssemblyTag => _class.Row.AssemblyTag;
         public string Name => _nameIndex.Value;
         public Span<byte> Signature => _signature.Value.AsSpan();
@@ -25,14 +20,7 @@ namespace PEQuick.TableRows
             _nameIndex.Resolve(tables);
             _signature.Resolve(tables);
         }
-
-        public override void Read(ref MetaDataReader reader)
-        {
-            _class = reader.ReadIndex<MemberRefParentIndex>();
-            _nameIndex = reader.ReadIndex<StringIndex>();
-            _signature = reader.ReadIndex<BlobIndex>();
-        }
-
+        
         public override void GetDependencies(DependencyGather tagQueue)
         {
             tagQueue.SeedTag(_class.Row);
@@ -41,7 +29,9 @@ namespace PEQuick.TableRows
 
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
-            throw new NotImplementedException();
+            writer.WriteIndex(_class);
+            writer.WriteIndex(_nameIndex);
+            writer.WriteIndex(_signature);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Vacuum.Core.Clr
             _currentSpan = _currentSpan.Slice(length);
             return returnValue;
         }
-        
+                        
         public unsafe string ReadFixedLengthUtf16(int length)
         {
             var adjustment = length % 2;

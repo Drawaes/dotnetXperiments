@@ -20,24 +20,7 @@ namespace PEQuick.TableRows
 
         public TableFlag TableFlag => _tableFlag;
         public int Count => _contents.Count;
-
-        public T this[int index]
-        {
-            get
-            {
-                if (index == 0)
-                {
-                    return null;
-                }
-                index--;
-                if (index == _contents.Count)
-                {
-                    return null;
-                }
-                return _contents[index];
-            }
-        }
-
+                
         public Row GetRow(int index) => _contents[index - 1];
 
         public void Write(ref MetaDataWriter writer, Dictionary<uint,uint> remapper)
@@ -54,6 +37,7 @@ namespace PEQuick.TableRows
             {
                 return new T[0];
             }
+
             first = first - 1;
             end = Math.Min(_contents.Count, end - 1);
             var returnArray = new T[end - first];

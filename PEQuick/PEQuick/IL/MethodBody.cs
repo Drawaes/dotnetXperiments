@@ -37,17 +37,28 @@ namespace PEQuick.IL
 
         }
 
+        public Span<byte> GetBody(Dictionary<uint,uint> remapper)
+        {
+            //TODO remap the body as needed, for now this isn't being
+            //done
+            return _methodBody.AsSpan();
+        }
+
         public IEnumerable<Row> DependentTags => _tags.Select(t => t.Row);
 
         private void ParseFatBody(Span<byte> input, MetaDataTables tables)
         {
+            var originalSpan = input;
             input = input.Read(out ushort headerFlags);
             input = input.Read(out ushort maxStack);
             input = input.Read(out uint codeSize);
             input = input.Read(out uint localvar);
             ParseIL(input.Slice(0, (int)codeSize), tables);
 
-            //TODO exception handlers and slice out the entire method body
+            var totalBodySize = originalSpan.Length - input.Slice((int)codeSize).Length;
+            _methodBody = originalSpan.Slice(0, totalBodySize).ToArray();
+
+            //TODO exception handlers and extra sections
         }
 
         private void ParseIL(Span<byte> il, MetaDataTables tables)

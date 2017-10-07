@@ -9,11 +9,6 @@ namespace PEQuick.TableRows
 {
     public class CustomAttributeRow : Row
     {
-        private HasCustomAttributeIndex _parent;
-        private CustomAttributeTypeIndex _type;
-        private BlobIndex _value;
-
-        public override TableFlag Table => TableFlag.CustomAttribute;
         public override uint AssemblyTag => _parent.Row.AssemblyTag;
 
         public override void Resolve(MetaDataTables tables)
@@ -22,17 +17,12 @@ namespace PEQuick.TableRows
             _type.Resolve(tables);
             _value.Resolve(tables);
         }
-
-        public override void Read(ref MetaDataReader reader)
-        {
-            _parent = reader.ReadIndex<HasCustomAttributeIndex>();
-            _type = reader.ReadIndex<CustomAttributeTypeIndex>();
-            _value = reader.ReadIndex<BlobIndex>();
-        }
-
+        
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
-            throw new NotImplementedException();
+            writer.WriteIndex(_parent);
+            writer.WriteIndex(_type);
+            writer.WriteIndex(_value);
         }
     }
 }

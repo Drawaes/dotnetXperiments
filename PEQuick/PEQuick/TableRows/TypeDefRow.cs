@@ -10,12 +10,7 @@ namespace PEQuick.TableRows
 {
     public class TypeDefRow : Row
     {
-        private uint _flags;
-        private StringIndex _nameIndex;
-        private StringIndex _namespaceIndex;
-        private TypeDefOrRefIndex _baseType;
-        private FieldIndex _firstField;
-        private MethodIndex _firstMethod;
+        
         private ModuleRow _parentModule;
         private MethodRow[] _methods;
         private FieldRow[] _fields;
@@ -44,17 +39,7 @@ namespace PEQuick.TableRows
                 f.Parent = this;
             }
         }
-
-        public override void Read(ref MetaDataReader reader)
-        {
-            _flags = reader.Read<uint>();
-            _nameIndex = reader.ReadIndex<StringIndex>();
-            _namespaceIndex = reader.ReadIndex<StringIndex>();
-            _baseType = reader.ReadIndex<TypeDefOrRefIndex>();
-            _firstField = reader.ReadIndex<FieldIndex>();
-            _firstMethod = reader.ReadIndex<MethodIndex>();
-        }
-
+        
         public override void GetDependencies(DependencyGather tagQueue)
         {
             tagQueue.SeedTag(_baseType.Row);

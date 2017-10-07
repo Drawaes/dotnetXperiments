@@ -11,12 +11,7 @@ namespace PEQuick.TableRows
 {
     public class MethodRow : Row
     {
-        private uint _rva;
-        private ushort _methodImplAttributes;
-        private MethodAttributesFlags _flags;
-        private StringIndex _nameIndex;
-        private BlobIndex _signature;
-        private ParamIndex _firstParam;
+        
         private MethodBody _methodBody;
         private ParamRow[] _params;
 
@@ -43,16 +38,7 @@ namespace PEQuick.TableRows
                 _methodBody = new MethodBody(_rva, tables);
             }
         }
-        
-        public override void Read(ref MetaDataReader reader)
-        {
-            _rva = reader.Read<uint>();
-            _methodImplAttributes = reader.Read<ushort>();
-            _flags = reader.Read<MethodAttributesFlags>();
-            _nameIndex = reader.ReadIndex<StringIndex>();
-            _signature = reader.ReadIndex<BlobIndex>();
-            _firstParam = reader.ReadIndex<ParamIndex>();
-        }
+
 
         public override void GetDependencies(DependencyGather tagQueue)
         {
@@ -67,7 +53,17 @@ namespace PEQuick.TableRows
 
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
-            throw new NotImplementedException();
+            uint index;
+            if(_methodBody == null)
+            {
+                index = 0;
+            }
+            else
+            {
+                index = (uint) writer.WriteRVABlob(_methodBody.GetBody(tokenRemapping));
+            }
+            writer.Write(index);
+
             writer.Write(_methodImplAttributes);
             writer.Write(_flags);
             writer.WriteIndex(_nameIndex);

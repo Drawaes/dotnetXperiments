@@ -10,9 +10,7 @@ namespace PEQuick.TableRows
 {
     public class TypeRefRow : Row
     {
-        private ResolutionScopeIndex _resolutionScope;
-        private StringIndex _nameIndex;
-        private StringIndex _namespaceIndex;
+        
 
         public override TableFlag Table => TableFlag.TypeRef;
         public override uint AssemblyTag => _resolutionScope.Row.AssemblyTag;
@@ -28,14 +26,7 @@ namespace PEQuick.TableRows
         {
             tagQueue.SeedTag(_resolutionScope.Row);
         }
-
-        public override void Read(ref MetaDataReader reader)
-        {
-            _resolutionScope = reader.ReadIndex<ResolutionScopeIndex>();
-            _nameIndex = reader.ReadIndex<StringIndex>();
-            _namespaceIndex = reader.ReadIndex<StringIndex>();
-        }
-        
+                
         public override void WriteRow(ref MetaDataWriter writer, Dictionary<uint, uint> tokenRemapping)
         {
             writer.WriteIndex(_resolutionScope);

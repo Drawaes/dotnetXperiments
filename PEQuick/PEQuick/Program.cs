@@ -8,25 +8,28 @@ namespace PEQuick
     {
         static void Main(string[] args)
         {
-            var fileList = new string[] {"mergetest.dll", "System.Console.dll"};
-            var files = new List< PEFile>();
+            //var testFile = "C:\\code\\output.dll";
+            //var peFile = PEFile.Load(testFile);
+
+            var fileList = new string[] { "mergetest.dll" }; // , "System.Console.dll" };
+            var files = new List<PEFile>();
 
             foreach (var fl in fileList)
             {
-                files.Add(PEFile.Load("C:\\code\\combined\\"+ fl));
+                files.Add(PEFile.Load("C:\\code\\combined\\" + fl));
             }
 
             Console.WriteLine("Write PE File");
-            var writer = new PEWriter(files[0], true);
+            var writer = new PEWriter(files[0], false);
             writer.Write(@"C:\code\output.dll");
 
             Console.WriteLine("Starting import");
 
 
 
-            var import = new Importer.AssemblyImporter(files[0], files[1]);
-            import.FindImportPoints();
-            import.ImportDependencies();
+            //var import = new Importer.AssemblyImporter(files[0], files[1]);
+            //import.FindImportPoints();
+            //import.ImportDependencies();
         }
     }
 }
